@@ -12,8 +12,4 @@
 
 Geode (Geode Engine), is a fork of Psych Engine, focusing it to be a more modern and customizable engine.
 
-This engine currently supports:
-
-- Current Psych Engine features. (i.e. Lua, HScript support, etc.)
-
 This Engine is still under beta phase, things may be subject to change.
