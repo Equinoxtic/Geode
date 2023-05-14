@@ -3,6 +3,7 @@ package;
 import Controls.Control;
 import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.FlxCamera;
 import flixel.FlxSubState;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.group.FlxGroup.FlxTypedGroup;
@@ -11,6 +12,7 @@ import flixel.system.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
+import flixel.util.FlxTimer;
 import flixel.util.FlxColor;
 import flixel.FlxCamera;
 import flixel.util.FlxStringUtil;
@@ -33,9 +35,16 @@ class PauseSubState extends MusicBeatSubstate
 
 	public static var songName:String = '';
 
+	var pauseMenuCam:FlxCamera;
+
 	public function new(x:Float, y:Float)
 	{
 		super();
+
+		pauseMenuCam = new FlxCamera();
+		pauseMenuCam.bgColor.alpha = 0;
+		FlxG.cameras.add(pauseMenuCam, false);
+
 		if(CoolUtil.difficulties.length < 2) menuItemsOG.remove('Change Difficulty'); //No need to change difficulty if there is only one!
 
 		if(PlayState.chartingMode)
@@ -118,12 +127,13 @@ class PauseSubState extends MusicBeatSubstate
 		blueballedTxt.alpha = 0;
 		levelDifficulty.alpha = 0;
 		levelInfo.alpha = 0;
+		pauseMenuCam.alpha = 0;
 
 		levelInfo.x = FlxG.width - (levelInfo.width + 20);
 		levelDifficulty.x = FlxG.width - (levelDifficulty.width + 20);
 		blueballedTxt.x = FlxG.width - (blueballedTxt.width + 20);
 
-		FlxTween.tween(bg, {alpha: 0.6}, 0.4, {ease: FlxEase.quartInOut});
+		FlxTween.tween(bg, {alpha: 0.75}, 0.4, {ease: FlxEase.quartInOut});
 		FlxTween.tween(levelInfo, {alpha: 1, y: 20}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.3});
 		FlxTween.tween(levelDifficulty, {alpha: 1, y: levelDifficulty.y + 5}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.5});
 		FlxTween.tween(blueballedTxt, {alpha: 1, y: blueballedTxt.y + 5}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.7});
@@ -132,7 +142,18 @@ class PauseSubState extends MusicBeatSubstate
 		add(grpMenuShit);
 
 		regenMenu();
+
+		bg.cameras = [pauseMenuCam];
+		levelInfo.cameras = [pauseMenuCam];
+		levelDifficulty.cameras = [pauseMenuCam];
+		blueballedTxt.cameras = [pauseMenuCam];
+		grpMenuShit.forEach(function(spr:FlxSprite) {
+			spr.cameras = [pauseMenuCam];
+		});
+
 		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
+
+		FlxTween.tween(pauseMenuCam, {alpha: 1}, 0.35, {ease: FlxEase.quartInOut});
 	}
 
 	var holdTime:Float = 0;
@@ -213,20 +234,25 @@ class PauseSubState extends MusicBeatSubstate
 			switch (daSelected)
 			{
 				case "Resume":
-					close();
+					closePauseMenu();
+
 				case 'Change Difficulty':
 					menuItems = difficultyChoices;
 					deleteSkipTimeText();
 					regenMenu();
+
 				case 'Toggle Practice Mode':
 					PlayState.instance.practiceMode = !PlayState.instance.practiceMode;
 					PlayState.changedDifficulty = true;
 					practiceText.visible = PlayState.instance.practiceMode;
+
 				case "Restart Song":
 					restartSong();
+
 				case "Leave Charting Mode":
 					restartSong();
 					PlayState.chartingMode = false;
+
 				case 'Skip Time':
 					if(curTime < Conductor.songPosition)
 					{
@@ -242,15 +268,18 @@ class PauseSubState extends MusicBeatSubstate
 						}
 						close();
 					}
+
 				case "End Song":
 					close();
 					PlayState.instance.finishSong(true);
+
 				case 'Toggle Botplay':
 					PlayState.instance.cpuControlled = !PlayState.instance.cpuControlled;
 					PlayState.changedDifficulty = true;
 					PlayState.instance.botplayTxt.visible = PlayState.instance.cpuControlled;
 					PlayState.instance.botplayTxt.alpha = 1;
 					PlayState.instance.botplaySine = 0;
+
 				case "Exit to menu":
 					PlayState.deathCounter = 0;
 					PlayState.seenCutscene = false;
@@ -296,6 +325,14 @@ class PauseSubState extends MusicBeatSubstate
 		{
 			MusicBeatState.resetState();
 		}
+	}
+
+	function closePauseMenu() {
+		FlxTween.tween(pauseMenuCam, {alpha: 0}, 0.525, {ease: FlxEase.quartInOut});
+
+		new FlxTimer().start(0.55, function(tmr:FlxTimer) {
+			close();
+		});
 	}
 
 	override function destroy()
