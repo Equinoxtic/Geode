@@ -1160,19 +1160,21 @@ class PlayState extends MusicBeatState
 		healthBarBG.sprTracker = healthBar;
 
 		iconP1 = new HealthIcon(boyfriend.healthIcon, true);
-		iconP1.y = healthBar.y - 75;
+		iconP1.y = healthBar.y - 85;
+		iconP1.x = (healthBar.x + (125 * 4.675));
 		iconP1.visible = !ClientPrefs.hideHud;
 		iconP1.alpha = ClientPrefs.healthBarAlpha;
 		add(iconP1);
 
 		iconP2 = new HealthIcon(dad.healthIcon, false);
-		iconP2.y = healthBar.y - 75;
+		iconP2.y = healthBar.y - 85;
+		iconP2.x = healthBar.x - (125 * 1.125);
 		iconP2.visible = !ClientPrefs.hideHud;
 		iconP2.alpha = ClientPrefs.healthBarAlpha;
 		add(iconP2);
 		reloadHealthBarColors();
 
-		scoreTxt = new FlxText(0, healthBarBG.y + 36, FlxG.width, "", 20);
+		scoreTxt = new FlxText(0, healthBarBG.y + 38, FlxG.width, "", 20);
 		scoreTxt.setFormat(Paths.font("Exo2-Medium.ttf"), 22, FlxColor.WHITE, CENTER);
 		scoreTxt.scrollFactor.set();
 		// scoreTxt.borderSize = 1.3;
@@ -3233,15 +3235,16 @@ class PlayState extends MusicBeatState
 		if (health > 2)
 			health = 2;
 
-		if (healthBar.percent < 20)
-			iconP1.animation.curAnim.curFrame = 1;
-		else
-			iconP1.animation.curAnim.curFrame = 0;
-
-		if (healthBar.percent > 80)
+		if (healthBar.percent > 80) {
+			iconP1.animation.curAnim.curFrame = 2;
 			iconP2.animation.curAnim.curFrame = 1;
-		else
+		} else if (healthBar.percent < 20) {
+			iconP1.animation.curAnim.curFrame = 1;
+			iconP2.animation.curAnim.curFrame = 2;
+		} else {
+			iconP1.animation.curAnim.curFrame = 0;
 			iconP2.animation.curAnim.curFrame = 0;
+		}
 
 		if (FlxG.keys.anyJustPressed(debugKeysCharacter) && !endingSong && !inCutscene) {
 			persistentUpdate = false;
