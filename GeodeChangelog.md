@@ -1,5 +1,17 @@
 # Geode Changelog
 
+## ( 0.2.0 - Beta )
+
+Pull Request: ([#5](https://github.com/Equinoxtic/Geode/pull/5))
+
+Release Tag: [0.2.0-beta](https://github.com/Equinoxtic/Geode/releases/tag/0.2.0-beta)
+
+### Changes
+
+- Updated Pause Menu.
+- New Winning Icons.
+- Updated Healthbar.
+
 ## ( 0.0.1 - Beta )
 
 Pull Request: ([#1](https://github.com/Equinoxtic/geode/pull/1))
