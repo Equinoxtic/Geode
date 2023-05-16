@@ -398,6 +398,7 @@ class CharacterEditorState extends MusicBeatState
 			],
 			"healthicon": "face",
 			"flip_x": false,
+			"character_name": "P",
 			"healthbar_colors": [
 				161,
 				161,
@@ -463,11 +464,12 @@ class CharacterEditorState extends MusicBeatState
 				character.singDuration = parsedJson.sing_duration;
 				character.positionArray = parsedJson.position;
 				character.cameraPosition = parsedJson.camera_position;
-
+				
 				character.imageFile = parsedJson.image;
 				character.jsonScale = parsedJson.scale;
 				character.noAntialiasing = parsedJson.no_antialiasing;
 				character.originalFlipX = parsedJson.flip_x;
+				character.characterName = parsedJson.character_name;
 				character.healthIcon = parsedJson.healthicon;
 				character.healthColorArray = parsedJson.healthbar_colors;
 				character.setPosition(character.positionArray[0] + OFFSET_X + 100, character.positionArray[1]);
@@ -494,6 +496,7 @@ class CharacterEditorState extends MusicBeatState
 
 	var imageInputText:FlxUIInputText;
 	var healthIconInputText:FlxUIInputText;
+	var characterNameInputText:FlxUIInputText;
 
 	var singDurationStepper:FlxUINumericStepper;
 	var scaleStepper:FlxUINumericStepper;
@@ -534,7 +537,9 @@ class CharacterEditorState extends MusicBeatState
 				getEvent(FlxUINumericStepper.CHANGE_EVENT, healthColorStepperB, null);
 			});
 
-		healthIconInputText = new FlxUIInputText(15, imageInputText.y + 35, 75, leHealthIcon.getCharacter(), 8);
+		characterNameInputText = new FlxUIInputText(15, imageInputText.y + 35, 75, '', 8);
+
+		healthIconInputText = new FlxUIInputText(15, characterNameInputText.y + 35, 75, leHealthIcon.getCharacter(), 8);
 
 		singDurationStepper = new FlxUINumericStepper(15, healthIconInputText.y + 45, 0.1, 4, 0, 999, 1);
 
@@ -577,6 +582,7 @@ class CharacterEditorState extends MusicBeatState
 		healthColorStepperB = new FlxUINumericStepper(singDurationStepper.x + 130, saveCharacterButton.y, 20, char.healthColorArray[2], 0, 255, 0);
 
 		tab_group.add(new FlxText(15, imageInputText.y - 18, 0, 'Image file name:'));
+		tab_group.add(new FlxText(15, characterNameInputText.y - 18, 0, 'Character Name: '));
 		tab_group.add(new FlxText(15, healthIconInputText.y - 18, 0, 'Health icon name:'));
 		tab_group.add(new FlxText(15, singDurationStepper.y - 18, 0, 'Sing Animation length:'));
 		tab_group.add(new FlxText(15, scaleStepper.y - 18, 0, 'Scale:'));
@@ -586,6 +592,7 @@ class CharacterEditorState extends MusicBeatState
 		tab_group.add(imageInputText);
 		tab_group.add(reloadImage);
 		tab_group.add(decideIconColor);
+		tab_group.add(characterNameInputText);
 		tab_group.add(healthIconInputText);
 		tab_group.add(singDurationStepper);
 		tab_group.add(scaleStepper);
@@ -765,6 +772,8 @@ class CharacterEditorState extends MusicBeatState
 			}
 			else if(sender == imageInputText) {
 				char.imageFile = imageInputText.text;
+			} else if (sender == characterNameInputText) {
+				char.characterName = characterNameInputText.text;
 			}
 		} else if(id == FlxUINumericStepper.CHANGE_EVENT && (sender is FlxUINumericStepper)) {
 			if (sender == scaleStepper)
@@ -982,6 +991,7 @@ class CharacterEditorState extends MusicBeatState
 		if(UI_characterbox != null) {
 			imageInputText.text = char.imageFile;
 			healthIconInputText.text = char.healthIcon;
+			characterNameInputText.text = char.characterName;
 			singDurationStepper.value = char.singDuration;
 			scaleStepper.value = char.jsonScale;
 			flipXCheckBox.checked = char.originalFlipX;
@@ -1099,7 +1109,7 @@ class CharacterEditorState extends MusicBeatState
 			textAnim.text = '';
 		}
 
-		var inputTexts:Array<FlxUIInputText> = [animationInputText, imageInputText, healthIconInputText, animationNameInputText, animationIndicesInputText];
+		var inputTexts:Array<FlxUIInputText> = [animationInputText, characterNameInputText, imageInputText, healthIconInputText, animationNameInputText, animationIndicesInputText];
 		for (i in 0...inputTexts.length) {
 			if(inputTexts[i].hasFocus) {
 				FlxG.sound.muteKeys = [];
@@ -1273,10 +1283,12 @@ class CharacterEditorState extends MusicBeatState
 
 	function saveCharacter() {
 		var json = {
+			
 			"animations": char.animationsArray,
 			"image": char.imageFile,
 			"scale": char.jsonScale,
 			"sing_duration": char.singDuration,
+			"character_name": char.characterName,
 			"healthicon": char.healthIcon,
 
 			"position":	char.positionArray,
