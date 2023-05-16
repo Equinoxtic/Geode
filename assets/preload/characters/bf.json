@@ -172,6 +172,7 @@
 		0,
 		350
 	],
+	"character_name": "Boyfriend",
 	"healthicon": "bf",
 	"flip_x": true,
 	"healthbar_colors": [
