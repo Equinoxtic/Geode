@@ -21,10 +21,12 @@ import haxe.format.JsonParser;
 using StringTools;
 
 typedef CharacterFile = {
+	
 	var animations:Array<AnimArray>;
 	var image:String;
 	var scale:Float;
 	var sing_duration:Float;
+	var character_name:String;
 	var healthicon:String;
 
 	var position:Array<Float>;
@@ -64,6 +66,7 @@ class Character extends FlxSprite
 	public var skipDance:Bool = false;
 
 	public var healthIcon:String = 'face';
+	public var characterName:String = '';
 	public var animationsArray:Array<AnimArray> = [];
 
 	public var positionArray:Array<Float> = [0, 0];
@@ -174,6 +177,7 @@ class Character extends FlxSprite
 					updateHitbox();
 				}
 
+				characterName = json.character_name;
 				positionArray = json.position;
 				cameraPosition = json.camera_position;
 

@@ -335,6 +335,11 @@ class PlayState extends MusicBeatState
 	var p_vignette:FlxSprite;
 	var p_vignetteOverlay:FlxSprite;
 
+	var playerName:String;
+	var opponentName:String;
+	var playerText:FlxText;
+	var opponentText:FlxText;
+
 	override public function create()
 	{
 		//trace('Playback Rate: ' + playbackRate);
@@ -1141,40 +1146,60 @@ class PlayState extends MusicBeatState
 
 		
 		healthBarBG = new AttachedSprite('healthBar');
-		healthBarBG.y = FlxG.height * 0.89;
+		healthBarBG.y = FlxG.height * 0.85;
 		healthBarBG.screenCenter(X);
+		healthBarBG.setGraphicSize(Std.int(healthBarBG.width * 1), Std.int(healthBarBG.height * 1.2));
 		healthBarBG.scrollFactor.set();
 		healthBarBG.visible = !ClientPrefs.hideHud;
 		healthBarBG.xAdd = -4;
 		healthBarBG.yAdd = -4;
-		add(healthBarBG);
 		if(ClientPrefs.downScroll) healthBarBG.y = 0.11 * FlxG.height;
-
-		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, FlxBarFillDirection.RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
-			'health', 0, 2);
+		
+		healthBar = new FlxBar(0, 0, FlxBarFillDirection.RIGHT_TO_LEFT, Std.int(healthBarBG.width * 1), Std.int(healthBarBG.height * 1), this,
+		'health', 0, 2);
 		healthBar.scrollFactor.set();
-		// healthBar
+		healthBar.x = healthBarBG.x * 1;
+		healthBar.y = healthBarBG.y - 1;
+		healthBar.setGraphicSize(Std.int(healthBarBG.width * 0.95), Std.int(healthBarBG.height * 0.35));
 		healthBar.visible = !ClientPrefs.hideHud;
 		healthBar.alpha = ClientPrefs.healthBarAlpha;
+		// healthBarBG.sprTracker = healthBar;
 		add(healthBar);
-		healthBarBG.sprTracker = healthBar;
-
+		add(healthBarBG);
+		
 		iconP1 = new HealthIcon(boyfriend.healthIcon, true);
 		iconP1.y = healthBar.y - 85;
 		iconP1.x = (healthBar.x + (125 * 4.675));
 		iconP1.visible = !ClientPrefs.hideHud;
 		iconP1.alpha = ClientPrefs.healthBarAlpha;
 		add(iconP1);
-
+		
 		iconP2 = new HealthIcon(dad.healthIcon, false);
 		iconP2.y = healthBar.y - 85;
 		iconP2.x = healthBar.x - (125 * 1.125);
 		iconP2.visible = !ClientPrefs.hideHud;
 		iconP2.alpha = ClientPrefs.healthBarAlpha;
 		add(iconP2);
+
 		reloadHealthBarColors();
 
-		scoreTxt = new FlxText(0, healthBarBG.y + 38, FlxG.width, "", 20);
+		playerText = new FlxText(0, healthBarBG.y - 25, 400, "", 22);
+		playerText.setFormat(Paths.font('HOOG0555.TTF'), 22, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		playerText.scrollFactor.set();
+		playerText.screenCenter(X);
+		playerText.visible = !ClientPrefs.hideHud;
+		playerText.borderSize = 1.375;
+		
+		opponentText = new FlxText(0, healthBarBG.y - 25, 400, "", 22);
+		opponentText.setFormat(Paths.font('HOOG0555.TTF'), 22, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		opponentText.scrollFactor.set();
+		opponentText.screenCenter(X);
+		opponentText.visible = !ClientPrefs.hideHud;
+		opponentText.borderSize = 1.375;
+		add(playerText);
+		add(opponentText);
+
+		scoreTxt = new FlxText(0, healthBarBG.y + 63, FlxG.width, "", 20);
 		scoreTxt.setFormat(Paths.font("Exo2-Medium.ttf"), 22, FlxColor.WHITE, CENTER);
 		scoreTxt.scrollFactor.set();
 		// scoreTxt.borderSize = 1.3;
@@ -1188,7 +1213,7 @@ class PlayState extends MusicBeatState
 		scoreTxtBackground.updateHitbox();
 		add(scoreTxt);
 
-		comboTxt = new FlxText(9 * 2, healthBarBG.y + 35, FlxG.width, "", 20);
+		comboTxt = new FlxText(9 * 2, healthBarBG.y + 60, FlxG.width, "", 20);
 		comboTxt.setFormat(Paths.font("Exo2-Medium.ttf"), 30, FlxColor.WHITE, LEFT);
 		comboTxt.scrollFactor.set();
 		// comboTxt.borderSize = 1.3;
@@ -1206,17 +1231,17 @@ class PlayState extends MusicBeatState
 			botplayTxt.y = FlxG.height - 78;
 		}
 
-		p_vignetteOverlay = new FlxSprite().makeGraphic(1280, 720);
-		p_vignetteOverlay.alpha = 0;
-		p_vignetteOverlay.scrollFactor.set();
-		p_vignetteOverlay.screenCenter();
-		add(p_vignetteOverlay);
-
 		p_vignette = new FlxSprite().loadGraphic(Paths.image("vignetteDesat"));
 		p_vignette.scrollFactor.set();
 		p_vignette.screenCenter();
 		p_vignette.antialiasing = ClientPrefs.globalAntialiasing;
 		p_vignette.alpha = 0;
+		p_vignetteOverlay = new FlxSprite().makeGraphic(1280, 720);
+		p_vignetteOverlay.alpha = 0;
+		p_vignetteOverlay.scrollFactor.set();
+		p_vignetteOverlay.screenCenter();
+
+		add(p_vignetteOverlay);
 		add(p_vignette);
 
 		strumLineNotes.cameras = [camHUD];
@@ -1230,6 +1255,8 @@ class PlayState extends MusicBeatState
 		doof.cameras = [camHUD];
 		p_vignetteOverlay.cameras = [camHUD];
 		p_vignette.cameras = [camHUD];
+		playerText.cameras = [camHUD];
+		opponentText.cameras = [camHUD];
 		
 		botplayTxt.cameras = [camExtra];
 		comboTxt.cameras = [camExtra];
@@ -1435,6 +1462,7 @@ class PlayState extends MusicBeatState
 
 		super.create();
 
+		getCharacterNames();
 
 		trace("Credit: " + set_songCredit());
 
@@ -1458,6 +1486,12 @@ class PlayState extends MusicBeatState
 		Paths.clearUnusedMemory();
 		
 		CustomFadeTransition.nextCamera = camOther;
+	}
+
+	public function getCharacterNames():Void {
+		var bfString:String = ((boyfriend.characterName != null) ? boyfriend.characterName : '');
+		var dadString:String = ((dad.characterName != null) ? dad.characterName : '');
+		trace('\n\n[Boyfriend/Player]: $bfString\n[Dad/Opponent]: $dadString\n\n');
 	}
 
 	public function check_preferences():Void {
@@ -1545,18 +1579,28 @@ class PlayState extends MusicBeatState
 		switch (songName) {
 			case 'tutorial' | 'bopeebo' | 'fresh' | 'dad-battle':
 				creditString = 'KawaiSprite';
+
 			case 'spookeez' | 'south':
 				creditString = 'KawaiSprite';
+
 			case 'pico' | 'philly-nice' | 'blammed':
 				creditString = 'KawaiSprite';
+
 			case 'satin-panties' | 'high' | 'milf':
 				creditString = 'KawaiSprite';
+
 			case 'cocoa' | 'eggnog':
 				creditString = 'KawaiSprite';
+
+			case 'senpai' | 'roses' | 'thorns':
+				creditString = 'KawaiSprite';
+
 			case 'ugh' | 'guns' | 'stress':
 				creditString = 'KawaiSprite';
+
 			case 'monster' | 'winter-horrorland':
 				creditString = 'KawaiSprite & BassetFilms';
+
 			default:
 				if (SONG.credit != null || SONG.credit != '') {
 					creditString = SONG.credit;
@@ -3181,9 +3225,21 @@ class PlayState extends MusicBeatState
 
 		super.update(elapsed);
 
+		if (boyfriend.characterName != null) {
+			playerText.text = boyfriend.characterName;
+		} else {
+			playerText.text = 'P1';
+		}
+
+		if (dad.characterName != null)  {
+			opponentText.text = dad.characterName;
+		} else {
+			opponentText.text = 'P2';
+		}
+
 		setOnLuas('curDecStep', curDecStep);
 		setOnLuas('curDecBeat', curDecBeat);
-		
+
 		if (ClientPrefs.useP_Vignette) {
 			p_vignette.color = FlxColor.fromRGB(
 				boyfriend.healthColorArray[0],
@@ -3194,6 +3250,7 @@ class PlayState extends MusicBeatState
 				boyfriend.healthColorArray[1] - 25,
 				boyfriend.healthColorArray[2] - 25
 			);
+			
 			FlxTween.tween(p_vignette, {alpha: (healthBar.percent / 100) - 0.86}, 0.05);
 			FlxTween.tween(p_vignetteOverlay, {alpha: (healthBar.percent / 100) - 0.885}, 0.05);
 		}
@@ -4697,7 +4754,8 @@ class PlayState extends MusicBeatState
 			}
 		});
 		combo = 0;
-		health -= daNote.missHealth * healthLoss;
+		var noteMissAmount = daNote.missHealth * healthLoss;
+		health -= noteMissAmount;
 		
 		if(instakillOnMiss)
 		{
@@ -4777,7 +4835,6 @@ class PlayState extends MusicBeatState
 	function opponentNoteHit(note:Note):Void
 	{
 		health -= 0.00475;
-
 		if (Paths.formatToSongPath(SONG.song) != 'tutorial')
 			camZooming = true;
 
@@ -4872,7 +4929,9 @@ class PlayState extends MusicBeatState
 				if(combo > 9999) combo = 9999;
 				popUpScore(note);
 			}
-			health += note.hitHealth * healthGain;
+
+			var noteGainAmount:Float = note.hitHealth * healthGain;
+			health += noteGainAmount;
 
 			if(!note.noAnimation) {
 				var animToPlay:String = singAnimations[Std.int(Math.abs(note.noteData))];
