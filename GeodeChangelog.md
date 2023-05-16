@@ -1,5 +1,17 @@
 # Geode Changelog
 
+## ( 0.3.8 - Beta )
+
+Pull Request: ([#8](https://github.com/Equinoxtic/Geode/pull/8))
+
+Release Tag:
+
+- New Character Naming System
+- New Health Bar
+- New fonts
+- Removed the "Crash" Window
+- Fixed gitVersion file.
+
 ## ( 0.2.0 - Beta )
 
 Pull Request: ([#5](https://github.com/Equinoxtic/Geode/pull/5))
