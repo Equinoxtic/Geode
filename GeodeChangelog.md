@@ -4,7 +4,7 @@
 
 Pull Request: ([#8](https://github.com/Equinoxtic/Geode/pull/8))
 
-Release Tag:
+Release Tag: [0.3.8-beta](https://github.com/Equinoxtic/Geode/releases/tag/0.3.8-beta)
 
 - New Character Naming System
 - New Health Bar
