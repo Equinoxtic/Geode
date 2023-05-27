@@ -1,5 +1,21 @@
 # Geode Changelog
 
+## ( 0.5.1 - Beta )
+
+Pull Request: ([#11](https://github.com/Equinoxtic/Geode/pull/11))
+
+Release Tag: [0.5.1-beta](https://github.com/Equinoxtic/Geode/releases/tag/0.5.1-beta)
+
+- New library (GeodeLib)
+	* `GeodeTween` - A custom FlxTween class that can manually and easily pause tweens with it's `globalManager`.
+	* `CustomFlash` - A custom camera flashing that allows the initial alpha, duration, color and it's start delay values to be modified.
+- Added the long-awaited Extras Menu
+- Minor improvements to Pause Menu.
+- Minor Gameplay UI Improvements.
+- Updated Title Screen.
+
+> Release Notes: "Things may be subject to change as Geode Engine is in Beta."
+
 ## ( 0.3.8 - Beta )
 
 Pull Request: ([#8](https://github.com/Equinoxtic/Geode/pull/8))
