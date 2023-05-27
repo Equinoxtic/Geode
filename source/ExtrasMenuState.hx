@@ -224,7 +224,12 @@ class ExtrasMenuState extends MusicBeatState
 
 					menuItems.forEach(function(spr:FlxSprite)
 					{
-						FlxFlicker.flicker(spr, 0, 0.04, true, false);
+						if (ClientPrefs.flashing) {
+							FlxFlicker.flicker(spr, 0, 0.05, true, false);
+						} else {
+							GeodeTween.tween(spr, {alpha: 0}, 1.875, {ease: FlxEase.circInOut});
+						}
+						
 						new FlxTimer().start(0.5, function(tmr:FlxTimer)
 						{
 							var daChoice:String = optionShit[curSelected];
