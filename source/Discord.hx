@@ -17,7 +17,7 @@ class DiscordClient
 	{
 		trace("Discord Client starting...");
 		DiscordRpc.start({
-			clientID: "1071999500316581888",
+			clientID: "1110171307519254608",
 			onReady: onReady,
 			onError: onError,
 			onDisconnected: onDisconnected
@@ -44,8 +44,8 @@ class DiscordClient
 		DiscordRpc.presence({
 			details: "In the Menus",
 			state: null,
-			largeImageKey: 'iconrpc2',
-			largeImageText: "PJ:FS!"
+			largeImageKey: 'geoderpcicon',
+			largeImageText: "Geode Engine"
 		});
 	}
 
@@ -81,7 +81,7 @@ class DiscordClient
 		DiscordRpc.presence({
 			details: details,
 			state: state,
-			largeImageKey: 'iconrpc2',
+			largeImageKey: 'geoderpcicon',
 			largeImageText: "Engine Version: " + MainMenuState.geodeEngineVersion,
 			smallImageKey : smallImageKey,
 			// Obtained times are in milliseconds so they are divided so Discord can use it

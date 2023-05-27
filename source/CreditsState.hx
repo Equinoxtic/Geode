@@ -81,6 +81,10 @@ class CreditsState extends MusicBeatState
 		#end
 
 		var pisspoop:Array<Array<String>> = [ //Name - Icon name - Description - Link - BG Color
+			['Geode Engine Credits'],
+			['Vertic',				'vertic',			'Main Programmer of Geode Engine.',								'https://github.com/Equinoxtic',		'BD3C61'],
+			['Rozebud',				'rozebud',			'Icons and Dev. of FPS+',										'https://github.com/ThatRozebudDude',	'9E45DE'],
+			[''],
 			['Psych Engine Team'],
 			['Shadow Mario',		'shadowmario',		'Main Programmer of Psych Engine',								'https://twitter.com/Shadow_Mario_',	'444444'],
 			['RiverOaken',			'river',			'Main Artist/Animator of Psych Engine',							'https://twitter.com/RiverOaken',		'B42F71'],
@@ -213,7 +217,7 @@ class CreditsState extends MusicBeatState
 					colorTween.cancel();
 				}
 				FlxG.sound.play(Paths.sound('cancelMenu'));
-				MusicBeatState.switchState(new MainMenuState());
+				MusicBeatState.switchState(new ExtrasMenuState());
 				quitting = true;
 			}
 		}
