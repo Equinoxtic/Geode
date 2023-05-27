@@ -4,6 +4,7 @@ package;
 import Discord.DiscordClient;
 import sys.thread.Thread;
 #end
+import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -35,8 +36,11 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import flixel.effects.FlxFlicker;
 import lime.app.Application;
 import openfl.Assets;
+import geodelib.CustomFlash;
+import geodelib.GeodeTween;
 
 using StringTools;
 typedef TitleData =
@@ -89,6 +93,9 @@ class TitleState extends MusicBeatState
 	var titleJSON:TitleData;
 
 	public static var updateVersion:String = '';
+
+	var cameraFlash:FlxCamera;
+	var _flash:CustomFlash;
 
 	override public function create():Void
 	{
@@ -233,6 +240,13 @@ class TitleState extends MusicBeatState
 			}
 		}
 		#end
+
+		cameraFlash = new FlxCamera();
+		cameraFlash.bgColor.alpha = 0;
+		FlxG.cameras.add(cameraFlash, false);
+		_flash = new CustomFlash();
+		_flash.cameras = [cameraFlash];
+		add(_flash);
 	}
 
 	var logoBl:FlxSprite;
@@ -501,8 +515,6 @@ class TitleState extends MusicBeatState
 			if (titleTimer > 2) titleTimer -= 2;
 		}
 
-		// EASTER EGG
-
 		if (initialized && !transitioning && skippedIntro)
 		{
 			if (newTitle && !pressedEnter)
@@ -523,13 +535,20 @@ class TitleState extends MusicBeatState
 				titleText.alpha = 1;
 				
 				if(titleText != null) titleText.animation.play('press');
-
-				FlxG.camera.flash(ClientPrefs.flashing ? FlxColor.WHITE : 0x4CFFFFFF, 1);
-
+				
+				if (ClientPrefs.flashing) {
+					FlxFlicker.flicker(titleText, 0, 0.05, true, false);
+					_flash.flash(1, 1.75, FlxColor.WHITE, 0);
+				} else {
+					GeodeTween.tween(titleText, {alpha: 0}, 1.875, {ease: FlxEase.circInOut});
+					_flash.flash(0.075, 1.75, FlxColor.WHITE, 0);
+				}
+				
 				gradientTwn.cancel();
 				credGradientTwn.cancel();
 				credTitleGradient.alpha = 0;
 				titleGradient.alpha = 0.95;
+				
 
 				FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
 
@@ -611,6 +630,8 @@ class TitleState extends MusicBeatState
 		}
 
 		super.update(elapsed);
+
+		GeodeTween.globalManager.update(elapsed);
 	}
 
 	function createCoolText(textArray:Array<String>, ?offset:Float = 0)
