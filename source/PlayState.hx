@@ -55,6 +55,8 @@ import flixel.effects.particles.FlxParticle;
 import flixel.util.FlxSave;
 import flixel.animation.FlxAnimationController;
 import animateatlas.AtlasFrameMaker;
+import geodelib.GeodeTween;
+import geodelib.CustomFlash;
 import Achievements;
 import StageData;
 import FunkinLua;
@@ -114,7 +116,7 @@ class PlayState extends MusicBeatState
 	public var dadMap:Map<String, Character> = new Map<String, Character>();
 	public var gfMap:Map<String, Character> = new Map<String, Character>();
 	public var variables:Map<String, Dynamic> = new Map<String, Dynamic>();
-	public var modchartTweens:Map<String, FlxTween> = new Map();
+	public var modchartTweens:Map<String, GeodeTween> = new Map();
 	public var modchartSprites:Map<String, ModchartSprite> = new Map();
 	public var modchartTimers:Map<String, FlxTimer> = new Map();
 	public var modchartSounds:Map<String, FlxSound> = new Map();
@@ -175,7 +177,7 @@ class PlayState extends MusicBeatState
 	public var grpNoteSplashes:FlxTypedGroup<NoteSplash>;
 
 	public var camZooming:Bool = false;
-	public var camZoomingMult:Float = 2.75;
+	public var camZoomingMult:Float = 1.75;
 	public var camZoomingDecay:Float = 1.25;
 	private var curSong:String = "";
 
@@ -424,6 +426,8 @@ class PlayState extends MusicBeatState
 
 		persistentUpdate = true;
 		persistentDraw = true;
+
+		camHUD.zoom = 0.935;
 
 		if (SONG == null)
 			SONG = Song.loadFromJson('tutorial');
@@ -1053,10 +1057,10 @@ class PlayState extends MusicBeatState
 
 		var showTime:Bool = (ClientPrefs.timeBarType != 'Disabled');
 		timeTxt = new FlxText(STRUM_X + (FlxG.width / 2) - 248, 19, 400, "", 32);
-		timeTxt.setFormat(Paths.font("Exo2-Medium.ttf"), 32, FlxColor.WHITE, CENTER);
+		timeTxt.setFormat(Paths.font("Exo2-Medium.ttf"), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.SHADOW, FlxColor.fromRGB(170, 170, 170));
 		timeTxt.scrollFactor.set();
 		timeTxt.alpha = 0;
-		// timeTxt.borderSize = 2;
+		timeTxt.borderSize = 1.2;
 		timeTxt.visible = showTime;
 
 		if(ClientPrefs.timeBarType == 'Song Name')
@@ -1183,14 +1187,14 @@ class PlayState extends MusicBeatState
 
 		reloadHealthBarColors();
 
-		playerText = new FlxText(0, healthBarBG.y - 25, 400, "", 22);
+		playerText = new FlxText(0, healthBarBG.y - 25, 400, "", 23);
 		playerText.setFormat(Paths.font('HOOG0555.TTF'), 22, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		playerText.scrollFactor.set();
 		playerText.screenCenter(X);
 		playerText.visible = !ClientPrefs.hideHud;
 		playerText.borderSize = 1.375;
 		
-		opponentText = new FlxText(0, healthBarBG.y - 25, 400, "", 22);
+		opponentText = new FlxText(0, healthBarBG.y - 25, 400, "", 23);
 		opponentText.setFormat(Paths.font('HOOG0555.TTF'), 22, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		opponentText.scrollFactor.set();
 		opponentText.screenCenter(X);
@@ -1199,24 +1203,26 @@ class PlayState extends MusicBeatState
 		add(playerText);
 		add(opponentText);
 
-		scoreTxt = new FlxText(0, healthBarBG.y + 63, FlxG.width, "", 20);
-		scoreTxt.setFormat(Paths.font("Exo2-Medium.ttf"), 22, FlxColor.WHITE, CENTER);
+		var defaultOutlineColor:FlxColor = FlxColor.fromRGB(150, 150, 150);
+
+		scoreTxt = new FlxText(0, healthBarBG.y + 64, FlxG.width, "", 20);
+		scoreTxt.setFormat(Paths.font("Exo2-Medium.ttf"), 22, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, defaultOutlineColor);
 		scoreTxt.scrollFactor.set();
-		// scoreTxt.borderSize = 1.3;
+		scoreTxt.borderSize = 0.85;
 		scoreTxt.visible = !ClientPrefs.hideHud;
 		var scoreTxtBackground:FlxSprite = new FlxSprite().makeGraphic(1, 1, FlxColor.BLACK);
 		scoreTxtBackground.alpha = ClientPrefs.alphaOverride;
-		add(scoreTxtBackground);
-		scoreTxtBackground.setPosition(scoreTxt.x - 10, scoreTxt.y - 10);
-		scoreTxtBackground.setGraphicSize(Std.int(scoreTxt.width + 25), Std.int(scoreTxt.height + 30));
 		scoreTxtBackground.scrollFactor.set();
+		scoreTxtBackground.setPosition(scoreTxt.x - 10, scoreTxt.y - 10);
+		scoreTxtBackground.setGraphicSize(Std.int(scoreTxt.width + 10), Std.int(scoreTxt.height + 25));
 		scoreTxtBackground.updateHitbox();
+		add(scoreTxtBackground);
 		add(scoreTxt);
 
-		comboTxt = new FlxText(9 * 2, healthBarBG.y + 60, FlxG.width, "", 20);
-		comboTxt.setFormat(Paths.font("Exo2-Medium.ttf"), 30, FlxColor.WHITE, LEFT);
+		comboTxt = new FlxText(9 * 4, healthBarBG.y + 67, FlxG.width, "", 35);
+		comboTxt.setFormat(Paths.font("HOOG0555.TTF"), 35, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, defaultOutlineColor);
+		comboTxt.borderSize = 1.275;
 		comboTxt.scrollFactor.set();
-		// comboTxt.borderSize = 1.3;
 		comboTxt.visible = !ClientPrefs.hideHud;
 		comboTxt.alpha = 0;
 		add(comboTxt);
@@ -1253,8 +1259,6 @@ class PlayState extends MusicBeatState
 		iconP2.cameras = [camHUD];
 		// timeBarBG.cameras = [camHUD];
 		doof.cameras = [camHUD];
-		p_vignetteOverlay.cameras = [camHUD];
-		p_vignette.cameras = [camHUD];
 		playerText.cameras = [camHUD];
 		opponentText.cameras = [camHUD];
 		
@@ -1265,6 +1269,8 @@ class PlayState extends MusicBeatState
 		scoreTxtBackground.cameras = [camExtra];
 		scoreTxt.cameras = [camExtra];
 		timeTxt.cameras = [camExtra];
+		p_vignetteOverlay.cameras = [camExtra];
+		p_vignette.cameras = [camExtra];
 
 		// if (SONG.song == 'South')
 		// FlxG.camera.alpha = 0.7;
@@ -1372,7 +1378,7 @@ class PlayState extends MusicBeatState
 					snapCamFollowToPos(dad.getMidpoint().x + 150, dad.getMidpoint().y - 100);
 					inCutscene = true;
 
-					FlxTween.tween(whiteScreen, {alpha: 0}, 1, {
+					GeodeTween.tween(whiteScreen, {alpha: 0}, 1, {
 						startDelay: 0.1,
 						ease: FlxEase.linear,
 						onComplete: function(twn:FlxTween)
@@ -1393,7 +1399,7 @@ class PlayState extends MusicBeatState
 					camHUD.visible = false;
 					inCutscene = true;
 
-					FlxTween.tween(blackScreen, {alpha: 0}, 0.7, {
+					GeodeTween.tween(blackScreen, {alpha: 0}, 0.7, {
 						ease: FlxEase.linear,
 						onComplete: function(twn:FlxTween) {
 							remove(blackScreen);
@@ -1408,7 +1414,7 @@ class PlayState extends MusicBeatState
 					{
 						camHUD.visible = true;
 						remove(blackScreen);
-						FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, 2.5, {
+						GeodeTween.tween(FlxG.camera, {zoom: defaultCamZoom}, 2.5, {
 							ease: FlxEase.quadInOut,
 							onComplete: function(twn:FlxTween)
 							{
@@ -1947,7 +1953,7 @@ class PlayState extends MusicBeatState
 		{
 			var timeForStuff:Float = Conductor.crochet / 1000 * 4.5;
 			FlxG.sound.music.fadeOut(timeForStuff);
-			FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, timeForStuff, {ease: FlxEase.quadInOut});
+			GeodeTween.tween(FlxG.camera, {zoom: defaultCamZoom}, timeForStuff, {ease: FlxEase.quadInOut});
 			moveCamera(true);
 			startCountdown();
 
@@ -2025,9 +2031,9 @@ class PlayState extends MusicBeatState
 				cutsceneHandler.onStart = function()
 				{
 					tightBars.play(true);
-					FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom * 1.2}, 4, {ease: FlxEase.quadInOut});
-					FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom * 1.2 * 1.2}, 0.5, {ease: FlxEase.quadInOut, startDelay: 4});
-					FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom * 1.2}, 1, {ease: FlxEase.quadInOut, startDelay: 4.5});
+					GeodeTween.tween(FlxG.camera, {zoom: defaultCamZoom * 1.2}, 4, {ease: FlxEase.quadInOut});
+					GeodeTween.tween(FlxG.camera, {zoom: defaultCamZoom * 1.2 * 1.2}, 0.5, {ease: FlxEase.quadInOut, startDelay: 4});
+					GeodeTween.tween(FlxG.camera, {zoom: defaultCamZoom * 1.2}, 1, {ease: FlxEase.quadInOut, startDelay: 4.5});
 				};
 
 				cutsceneHandler.timer(4, function()
@@ -2046,7 +2052,7 @@ class PlayState extends MusicBeatState
 				gfGroup.alpha = 0.00001;
 				boyfriendGroup.alpha = 0.00001;
 				camFollow.set(dad.x + 400, dad.y + 170);
-				FlxTween.tween(FlxG.camera, {zoom: 0.9 * 1.2}, 1, {ease: FlxEase.quadInOut});
+				GeodeTween.tween(FlxG.camera, {zoom: 0.9 * 1.2}, 1, {ease: FlxEase.quadInOut});
 				foregroundSprites.forEach(function(spr:BGSprite)
 				{
 					spr.y += 100;
@@ -2119,8 +2125,8 @@ class PlayState extends MusicBeatState
 
 				cutsceneHandler.timer(15.2, function()
 				{
-					FlxTween.tween(camFollow, {x: 650, y: 300}, 1, {ease: FlxEase.sineOut});
-					FlxTween.tween(FlxG.camera, {zoom: 0.9 * 1.2 * 1.2}, 2.25, {ease: FlxEase.quadInOut});
+					GeodeTween.tween(camFollow, {x: 650, y: 300}, 1, {ease: FlxEase.sineOut});
+					GeodeTween.tween(FlxG.camera, {zoom: 0.9 * 1.2 * 1.2}, 2.25, {ease: FlxEase.quadInOut});
 
 					gfDance.visible = false;
 					gfCutscene.alpha = 1;
@@ -2193,7 +2199,7 @@ class PlayState extends MusicBeatState
 
 					camFollow.set(boyfriend.x + 280, boyfriend.y + 200);
 					cameraSpeed = 12;
-					FlxTween.tween(FlxG.camera, {zoom: 0.9 * 1.2 * 1.2}, 0.25, {ease: FlxEase.elasticOut});
+					GeodeTween.tween(FlxG.camera, {zoom: 0.9 * 1.2 * 1.2}, 0.25, {ease: FlxEase.elasticOut});
 				});
 
 				cutsceneHandler.timer(32.2, function()
@@ -2309,23 +2315,57 @@ class PlayState extends MusicBeatState
 					santa.dance(true);
 				}
 
+				countdownReady = new FlxSprite().loadGraphic(Paths.image(introAlts[0]));
+				countdownReady.cameras = [camHUD];
+				countdownReady.scrollFactor.set();
+				countdownReady.updateHitbox();
+
+				if (PlayState.isPixelStage)
+					countdownReady.setGraphicSize(Std.int(countdownReady.width * daPixelZoom));
+
+				countdownReady.screenCenter();
+				countdownReady.antialiasing = antialias;
+				countdownReady.alpha = 0;
+				insert(members.indexOf(notes), countdownReady);
+
+				countdownSet = new FlxSprite().loadGraphic(Paths.image(introAlts[1]));
+				countdownSet.cameras = [camHUD];
+				countdownSet.scrollFactor.set();
+				if (PlayState.isPixelStage)
+					countdownSet.setGraphicSize(Std.int(countdownSet.width * daPixelZoom));
+
+				countdownSet.screenCenter();
+				countdownSet.antialiasing = antialias;
+				countdownSet.alpha = 0;
+				insert(members.indexOf(notes), countdownSet);
+
+				countdownGo = new FlxSprite().loadGraphic(Paths.image(introAlts[2]));
+				countdownGo.cameras = [camHUD];
+				countdownGo.scrollFactor.set();
+
+				if (PlayState.isPixelStage)
+					countdownGo.setGraphicSize(Std.int(countdownGo.width * daPixelZoom));
+
+				countdownGo.updateHitbox();
+
+				countdownGo.screenCenter();
+				countdownGo.antialiasing = antialias;
+				countdownGo.alpha = 0;
+				insert(members.indexOf(notes), countdownGo);
+
+				var __flash:CustomFlash = new CustomFlash();
+				__flash.cameras = [camHUD];
+				add(__flash);
+
 				switch (swagCounter)
 				{
 					case 0:
 						FlxG.sound.play(Paths.sound('intro3' + introSoundsSuffix), 0.6);
+						__flash.flash(0.1, 1.75, FlxColor.WHITE);
 					case 1:
-						countdownReady = new FlxSprite().loadGraphic(Paths.image(introAlts[0]));
-						countdownReady.cameras = [camHUD];
-						countdownReady.scrollFactor.set();
-						countdownReady.updateHitbox();
-
-						if (PlayState.isPixelStage)
-							countdownReady.setGraphicSize(Std.int(countdownReady.width * daPixelZoom));
-
-						countdownReady.screenCenter();
-						countdownReady.antialiasing = antialias;
-						insert(members.indexOf(notes), countdownReady);
-						FlxTween.tween(countdownReady, {/*y: countdownReady.y + 100,*/ alpha: 0}, Conductor.crochet / 1000, {
+						countdownReady.alpha = 1;
+						__flash.flash(0.1, 1.75, FlxColor.WHITE);
+						GeodeTween.tween(countdownReady, {/*y: countdownReady.y + 100,*/ alpha: 0}, 1.755, {
 							ease: FlxEase.cubeInOut,
 							onComplete: function(twn:FlxTween)
 							{
@@ -2335,17 +2375,9 @@ class PlayState extends MusicBeatState
 						});
 						FlxG.sound.play(Paths.sound('intro2' + introSoundsSuffix), 0.6);
 					case 2:
-						countdownSet = new FlxSprite().loadGraphic(Paths.image(introAlts[1]));
-						countdownSet.cameras = [camHUD];
-						countdownSet.scrollFactor.set();
-
-						if (PlayState.isPixelStage)
-							countdownSet.setGraphicSize(Std.int(countdownSet.width * daPixelZoom));
-
-						countdownSet.screenCenter();
-						countdownSet.antialiasing = antialias;
-						insert(members.indexOf(notes), countdownSet);
-						FlxTween.tween(countdownSet, {/*y: countdownSet.y + 100,*/ alpha: 0}, Conductor.crochet / 1000, {
+						countdownSet.alpha = 1;
+						__flash.flash(0.1, 1.75, FlxColor.WHITE);
+						GeodeTween.tween(countdownSet, {/*y: countdownSet.y + 100,*/ alpha: 0}, 1.755, {
 							ease: FlxEase.cubeInOut,
 							onComplete: function(twn:FlxTween)
 							{
@@ -2355,19 +2387,9 @@ class PlayState extends MusicBeatState
 						});
 						FlxG.sound.play(Paths.sound('intro1' + introSoundsSuffix), 0.6);
 					case 3:
-						countdownGo = new FlxSprite().loadGraphic(Paths.image(introAlts[2]));
-						countdownGo.cameras = [camHUD];
-						countdownGo.scrollFactor.set();
-
-						if (PlayState.isPixelStage)
-							countdownGo.setGraphicSize(Std.int(countdownGo.width * daPixelZoom));
-
-						countdownGo.updateHitbox();
-
-						countdownGo.screenCenter();
-						countdownGo.antialiasing = antialias;
-						insert(members.indexOf(notes), countdownGo);
-						FlxTween.tween(countdownGo, {/*y: countdownGo.y + 100,*/ alpha: 0}, Conductor.crochet / 1000, {
+						countdownGo.alpha = 1;
+						__flash.flash(0.1, 1.75, FlxColor.WHITE);
+						GeodeTween.tween(countdownGo, {/*y: countdownGo.y + 100,*/ alpha: 0}, 1.755, {
 							ease: FlxEase.cubeInOut,
 							onComplete: function(twn:FlxTween)
 							{
@@ -2376,7 +2398,7 @@ class PlayState extends MusicBeatState
 							}
 						});
 						FlxG.sound.play(Paths.sound('introGo' + introSoundsSuffix), 0.6);
-					case 4:
+					// case 4:
 				}
 
 				notes.forEachAlive(function(note:Note) {
@@ -2460,7 +2482,7 @@ class PlayState extends MusicBeatState
 			}
 			scoreTxt.scale.x = 1.15;
 			scoreTxt.scale.y = 1.15;
-			scoreTxtTween = FlxTween.tween(scoreTxt.scale, {x: 1, y: 1}, 0.75, {
+			scoreTxtTween = GeodeTween.tween(scoreTxt.scale, {x: 1, y: 1}, 0.75, {
 				onComplete: function(twn:FlxTween) {
 					scoreTxtTween = null;
 				}
@@ -2483,21 +2505,23 @@ class PlayState extends MusicBeatState
 
 			comboTxt.scale.x = 1.0375;
 			comboTxt.scale.y = 1.0375;
-			comboTxtTween = FlxTween.tween(comboTxt.scale, {x: 1, y: 1}, 0.35, {
+			comboTxtTween = GeodeTween.tween(comboTxt.scale, {x: 1, y: 1}, 1.675, {
 				onComplete: function(twn:FlxTween) {
 					comboTxtTween = null;
 				}
 			});
+			comboTxtTween.start();
 		} else {
 			comboTxt.color = FlxColor.RED;
 			if (comboTxtTween != null) {
 				comboTxtTween.cancel();
 			}
-			comboTxtTween = FlxTween.tween(comboTxt, {alpha: 0}, 0.275, {
+			comboTxtTween = GeodeTween.tween(comboTxt, {alpha: 0}, 0.275, {
 				onComplete: function(twn:FlxTween) {
 					comboTxtTween = null;
 				}
 			});
+			comboTxtTween.start();
 		}
 	}
 
@@ -2561,8 +2585,8 @@ class PlayState extends MusicBeatState
 
 		// Song duration in a float, useful for the time left feature
 		songLength = FlxG.sound.music.length;
-		FlxTween.tween(timeBar, {alpha: 1}, 0.5, {ease: FlxEase.circOut});
-		FlxTween.tween(timeTxt, {alpha: 1}, 0.5, {ease: FlxEase.circOut});
+		GeodeTween.tween(timeBar, {alpha: 1}, 0.5, {ease: FlxEase.circOut});
+		GeodeTween.tween(timeTxt, {alpha: 1}, 0.5, {ease: FlxEase.circOut});
 
 		switch(curStage)
 		{
@@ -2882,7 +2906,7 @@ class PlayState extends MusicBeatState
 			{
 				//babyArrow.y -= 10;
 				babyArrow.alpha = 0;
-				FlxTween.tween(babyArrow, {/*y: babyArrow.y + 10,*/ alpha: targetAlpha}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
+				GeodeTween.tween(babyArrow, {/*y: babyArrow.y + 10,*/ alpha: targetAlpha}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
 			}
 			else
 			{
@@ -2914,6 +2938,8 @@ class PlayState extends MusicBeatState
 	{
 		if (paused)
 		{
+			GeodeTween.globalManager.active = false;
+				
 			if (FlxG.sound.music != null)
 			{
 				FlxG.sound.music.pause();
@@ -2924,8 +2950,6 @@ class PlayState extends MusicBeatState
 				startTimer.active = false;
 			if (finishTimer != null && !finishTimer.finished)
 				finishTimer.active = false;
-			if (songSpeedTween != null)
-				songSpeedTween.active = false;
 
 			if(carTimer != null) carTimer.active = false;
 
@@ -2939,6 +2963,7 @@ class PlayState extends MusicBeatState
 			for (tween in modchartTweens) {
 				tween.active = false;
 			}
+
 			for (timer in modchartTimers) {
 				timer.active = false;
 			}
@@ -2951,6 +2976,8 @@ class PlayState extends MusicBeatState
 	{
 		if (paused)
 		{
+			GeodeTween.globalManager.active = true;
+			
 			if (FlxG.sound.music != null && !startingSong)
 			{
 				resyncVocals();
@@ -2960,8 +2987,6 @@ class PlayState extends MusicBeatState
 				startTimer.active = true;
 			if (finishTimer != null && !finishTimer.finished)
 				finishTimer.active = true;
-			if (songSpeedTween != null)
-				songSpeedTween.active = true;
 
 			if(carTimer != null) carTimer.active = true;
 
@@ -2975,9 +3000,11 @@ class PlayState extends MusicBeatState
 			for (tween in modchartTweens) {
 				tween.active = true;
 			}
+
 			for (timer in modchartTimers) {
 				timer.active = true;
 			}
+
 			paused = false;
 			callOnLuas('onResume', []);
 
@@ -3211,7 +3238,7 @@ class PlayState extends MusicBeatState
 		}
 
 		if(!inCutscene) {
-			var lerpVal:Float = CoolUtil.boundTo(elapsed * 2.4 * cameraSpeed * playbackRate, 0, 1);
+			var lerpVal:Float = CoolUtil.boundTo(elapsed * 2.75 * cameraSpeed * playbackRate, 0, 1);
 			camFollowPos.setPosition(FlxMath.lerp(camFollowPos.x, camFollow.x + charAnimOffsetX, lerpVal), FlxMath.lerp(camFollowPos.y, camFollow.y + charAnimOffsetY, lerpVal));
 			if(!startingSong && !endingSong && boyfriend.animation.curAnim != null && boyfriend.animation.curAnim.name.startsWith('idle')) {
 				boyfriendIdleTime += elapsed;
@@ -3224,6 +3251,8 @@ class PlayState extends MusicBeatState
 		}
 
 		super.update(elapsed);
+
+		GeodeTween.globalManager.update(elapsed);
 
 		if (boyfriend.characterName != null) {
 			playerText.text = boyfriend.characterName;
@@ -3251,8 +3280,8 @@ class PlayState extends MusicBeatState
 				boyfriend.healthColorArray[2] - 25
 			);
 			
-			FlxTween.tween(p_vignette, {alpha: (healthBar.percent / 100) - 0.86}, 0.05);
-			FlxTween.tween(p_vignetteOverlay, {alpha: (healthBar.percent / 100) - 0.885}, 0.05);
+			GeodeTween.tween(p_vignette, {alpha: (healthBar.percent / 100) - 0.86}, 0.05);
+			GeodeTween.tween(p_vignetteOverlay, {alpha: (healthBar.percent / 100) - 0.885}, 0.05);
 		}
 
 		if(botplayTxt.visible) {
@@ -3360,7 +3389,7 @@ class PlayState extends MusicBeatState
 		if (camZooming)
 		{
 			FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, CoolUtil.boundTo(1 - (elapsed * 3.125 * camZoomingDecay * playbackRate), 0, 1));
-			camHUD.zoom = FlxMath.lerp(1, camHUD.zoom, CoolUtil.boundTo(1 - (elapsed * 3.125 * camZoomingDecay * playbackRate), 0, 1));
+			camHUD.zoom = FlxMath.lerp(0.935, camHUD.zoom, CoolUtil.boundTo(1 - (elapsed * 3.125 * camZoomingDecay * playbackRate), 0, 1));
 		}
 
 		FlxG.watch.addQuick("secShit", curSection);
@@ -3685,7 +3714,7 @@ class PlayState extends MusicBeatState
 						dadbattleBlack.visible = false;
 						dadbattleLight.visible = false;
 						defaultCamZoom -= 0.12;
-						FlxTween.tween(dadbattleSmokes, {alpha: 0}, 1, {onComplete: function(twn:FlxTween)
+						GeodeTween.tween(dadbattleSmokes, {alpha: 0}, 1, {onComplete: function(twn:FlxTween)
 						{
 							dadbattleSmokes.visible = false;
 						}});
@@ -4018,12 +4047,13 @@ class PlayState extends MusicBeatState
 				}
 				else
 				{
-					songSpeedTween = FlxTween.tween(this, {songSpeed: newValue}, val2 / playbackRate, {ease: FlxEase.linear, onComplete:
+					songSpeedTween = GeodeTween.tween(this, {songSpeed: newValue}, val2 / playbackRate, {ease: FlxEase.linear, onComplete:
 						function (twn:FlxTween)
 						{
 							songSpeedTween = null;
 						}
 					});
+					songSpeedTween.start();
 				}
 
 			case 'Set Property':
@@ -4086,7 +4116,7 @@ class PlayState extends MusicBeatState
 
 			if (Paths.formatToSongPath(SONG.song) == 'tutorial' && cameraTwn == null && FlxG.camera.zoom != 1)
 			{
-				cameraTwn = FlxTween.tween(FlxG.camera, {zoom: 1}, (Conductor.stepCrochet * 4 / 1000), {ease: FlxEase.elasticInOut, onComplete:
+				cameraTwn = GeodeTween.tween(FlxG.camera, {zoom: 1}, (Conductor.stepCrochet * 4 / 1000), {ease: FlxEase.elasticInOut, onComplete:
 					function (twn:FlxTween)
 					{
 						cameraTwn = null;
@@ -4098,11 +4128,12 @@ class PlayState extends MusicBeatState
 
 	function tweenCamIn() {
 		if (Paths.formatToSongPath(SONG.song) == 'tutorial' && cameraTwn == null && FlxG.camera.zoom != 1.3) {
-			cameraTwn = FlxTween.tween(FlxG.camera, {zoom: 1.3}, (Conductor.stepCrochet * 4 / 1000), {ease: FlxEase.elasticInOut, onComplete:
+			cameraTwn = GeodeTween.tween(FlxG.camera, {zoom: 1.3}, (Conductor.stepCrochet * 4 / 1000), {ease: FlxEase.elasticInOut, onComplete:
 				function (twn:FlxTween) {
 					cameraTwn = null;
 				}
 			});
+			cameraTwn.start();
 		}
 	}
 
@@ -4412,13 +4443,19 @@ class PlayState extends MusicBeatState
 		comboSpr.x = coolText.x;
 		comboSpr.acceleration.y = FlxG.random.int(200, 300) * playbackRate * playbackRate;
 		comboSpr.velocity.y -= FlxG.random.int(140, 160) * playbackRate;
-		comboSpr.visible = (!ClientPrefs.hideHud && showCombo);
+		comboSpr.visible = (!ClientPrefs.hideHud);
+		comboSpr.alpha = 0;
 		comboSpr.x += ClientPrefs.comboOffset[2];
 		comboSpr.y -= ClientPrefs.comboOffset[3];
 		comboSpr.y += 60;
 		comboSpr.velocity.x += FlxG.random.int(1, 10) * playbackRate;
 
 		insert(members.indexOf(strumLineNotes), rating);
+		insert(members.indexOf(strumLineNotes), comboSpr);
+
+		if (combo >= 5) {
+			comboSpr.alpha = 1;
+		}
 		
 		if (!ClientPrefs.comboStacking)
 		{
@@ -4453,10 +4490,6 @@ class PlayState extends MusicBeatState
 
 		var daLoop:Int = 0;
 		var xThing:Float = 0;
-		if (showCombo)
-		{
-			insert(members.indexOf(strumLineNotes), comboSpr);
-		}
 		if (!ClientPrefs.comboStacking)
 		{
 			if (lastCombo != null) lastCombo.kill();
@@ -4504,12 +4537,12 @@ class PlayState extends MusicBeatState
 			if(showComboNum)
 				insert(members.indexOf(strumLineNotes), numScore);
 
-			FlxTween.tween(numScore, {alpha: 0}, 0.2 / playbackRate, {
+			GeodeTween.tween(numScore, {alpha: 0}, 2.015, {
 				onComplete: function(tween:FlxTween)
 				{
 					numScore.destroy();
 				},
-				startDelay: Conductor.crochet * 0.002 / playbackRate
+				startDelay: Conductor.crochet * 0.002
 			});
 
 			daLoop++;
@@ -4524,11 +4557,11 @@ class PlayState extends MusicBeatState
 		coolText.text = Std.string(seperatedScore);
 		// add(coolText);
 
-		FlxTween.tween(rating, {alpha: 0}, 0.2 / playbackRate, {
-			startDelay: Conductor.crochet * 0.001 / playbackRate
+		GeodeTween.tween(rating, {alpha: 0}, 1.785 , {
+			startDelay: Conductor.crochet * 0.001
 		});
 
-		FlxTween.tween(comboSpr, {alpha: 0}, 0.2 / playbackRate, {
+		GeodeTween.tween(comboSpr, {alpha: 0}, 1.785, {
 			onComplete: function(tween:FlxTween)
 			{
 				coolText.destroy();
@@ -4536,7 +4569,7 @@ class PlayState extends MusicBeatState
 
 				rating.destroy();
 			},
-			startDelay: Conductor.crochet * 0.002 / playbackRate
+			startDelay: Conductor.crochet * 0.002
 		});
 	}
 
@@ -5139,15 +5172,15 @@ class PlayState extends MusicBeatState
 			camHUD.zoom += 0.03;
 
 			if(!camZooming) { //Just a way for preventing it to be permanently zoomed until Skid & Pump hits a note
-				FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, 0.5);
-				FlxTween.tween(camHUD, {zoom: 1}, 0.5);
+				GeodeTween.tween(FlxG.camera, {zoom: defaultCamZoom}, 0.5);
+				GeodeTween.tween(camHUD, {zoom: 1}, 0.5);
 			}
 		}
 
 		if(ClientPrefs.flashing) {
 			halloweenWhite.alpha = 0.4;
-			FlxTween.tween(halloweenWhite, {alpha: 0.5}, 0.075);
-			FlxTween.tween(halloweenWhite, {alpha: 0}, 0.25, {startDelay: 0.15});
+			GeodeTween.tween(halloweenWhite, {alpha: 0.5}, 0.075);
+			GeodeTween.tween(halloweenWhite, {alpha: 0}, 0.25, {startDelay: 0.15});
 		}
 	}
 
@@ -5351,6 +5384,12 @@ class PlayState extends MusicBeatState
 		}
 		lastBeatHit = curBeat;
 
+		if (camZooming && FlxG.camera.zoom < 1.35 && ClientPrefs.camZooms && curBeat % 2 == 0)
+		{
+			FlxG.camera.zoom += 0.015 * camZoomingMult;
+			camHUD.zoom += 0.03 * camZoomingMult;
+		}
+
 		setOnLuas('curBeat', curBeat); //DAWGG?????
 		callOnLuas('onBeatHit', []);
 	}
@@ -5364,12 +5403,6 @@ class PlayState extends MusicBeatState
 			if (generatedMusic && !endingSong && !isCameraOnForcedPos)
 			{
 				moveCameraSection();
-			}
-
-			if (camZooming && FlxG.camera.zoom < 1.35 && ClientPrefs.camZooms)
-			{
-				FlxG.camera.zoom += 0.015 * camZoomingMult;
-				camHUD.zoom += 0.03 * camZoomingMult;
 			}
 
 			if (SONG.notes[curSection].changeBPM)
