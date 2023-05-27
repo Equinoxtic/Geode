@@ -22,6 +22,8 @@ import lime.app.Application;
 import Achievements;
 import editors.MasterEditorMenu;
 import flixel.input.keyboard.FlxKey;
+import geodelib.CustomFlash;
+import geodelib.GeodeTween;
 
 using StringTools;
 
@@ -37,14 +39,6 @@ class MainMenuState extends MusicBeatState
 	private var camAchievement:FlxCamera;
 	
 	var optionShit:Array<String> = [
-		/*
-		'story_mode',
-		'freeplay',
-		#if MODS_ALLOWED 'mods', #end
-		#if ACHIEVEMENTS_ALLOWED 'awards', #end
-		'credits',
-		#if !switch 'donate', #end
-		'options' */
 		"play",
 		"extras",
 		"settings"
@@ -114,7 +108,7 @@ class MainMenuState extends MusicBeatState
 			menuItem.scale.x = scale;
 			menuItem.scale.y = scale;
 			menuItem.ID = i;
-			FlxTween.tween(menuItem, {x: -100 + (i * 10)}, 1.3, {ease: FlxEase.expoInOut});
+			GeodeTween.tween(menuItem, {x: -100 + (i * 10)}, 1.3, {ease: FlxEase.expoInOut});
 			menuItems.add(menuItem);
 			var scr:Float = (optionShit.length - 4) * 0.135;
 			if(optionShit.length < 6) scr = 0;
@@ -228,12 +222,12 @@ class MainMenuState extends MusicBeatState
 
 					// if(ClientPrefs.flashing) FlxFlicker.flicker(magenta, 1.1, 0.15, false);
 
-					FlxTween.tween(FlxG.camera, {zoom: 3}, 1.1, {ease: FlxEase.expoInOut});
-					FlxTween.tween(FlxG.camera, {alpha: 0}, 1.1, {ease: FlxEase.expoInOut});
+					GeodeTween.tween(FlxG.camera, {zoom: 3}, 1.1, {ease: FlxEase.expoInOut});
+					GeodeTween.tween(FlxG.camera, {alpha: 0}, 1.1, {ease: FlxEase.expoInOut});
 
 					menuItems.forEach(function(spr:FlxSprite)
 					{
-						FlxTween.tween(spr, {x: -600}, 0.6, {
+						GeodeTween.tween(spr, {x: -600}, 0.6, {
 							ease: FlxEase.backIn,
 							onComplete: function(twn:FlxTween)
 							{
@@ -245,24 +239,10 @@ class MainMenuState extends MusicBeatState
 							var daChoice:String = optionShit[curSelected];
 							switch (daChoice)
 							{
-								/*
-								case 'story_mode':
-									MusicBeatState.switchState(new StoryMenuState());
-								case 'freeplay':
-									MusicBeatState.switchState(new FreeplayState());
-								#if MODS_ALLOWED
-								case 'mods':
-									MusicBeatState.switchState(new ModsMenuState());
-								#end
-								case 'awards':
-									MusicBeatState.switchState(new AchievementsMenuState());
-								case 'credits':
-									MusicBeatState.switchState(new CreditsState());
-								case 'options':
-									LoadingState.loadAndSwitchState(new options.OptionsState());
-								*/
 								case "play":
 									MusicBeatState.switchState(new PlayMenuState());
+								case "extras":
+									MusicBeatState.switchState(new ExtrasMenuState());
 								case "settings":
 									MusicBeatState.switchState(new options.OptionsState());
 								default:
@@ -282,6 +262,8 @@ class MainMenuState extends MusicBeatState
 		}
 
 		super.update(elapsed);
+
+		GeodeTween.globalManager.update(elapsed);
 	}
 
 	function changeItem(huh:Int = 0)
