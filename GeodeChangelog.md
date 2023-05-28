@@ -1,5 +1,17 @@
 # Geode Changelog
 
+## ( 0.5.2 - Beta Hotfix )
+
+Pull Request: ([#14](https://github.com/Equinoxtic/Geode/commit/52e0222451f66b3552f302210a425a61f819998c))
+
+Release Tag: [0.5.2-beta-hotfix](https://github.com/Equinoxtic/Geode/releases/tag/0.5.2-beta-hotfix)
+
+- Fixed Version Control
+- Removed Easter Eggs
+- Fixed Flashing lights
+
+> Release Notes: "Things may be subject to change as Geode Engine is in Beta."
+
 ## ( 0.5.1 - Beta )
 
 Pull Request: ([#11](https://github.com/Equinoxtic/Geode/pull/11))
