@@ -29,7 +29,7 @@ using StringTools;
 
 class MainMenuState extends MusicBeatState
 {
-	public static var geodeEngineVersion:String = '0.0.1'; //This is also used for Discord RPC
+	public static var geodeEngineVersion:String = '0.5.2'; //This is also used for Discord RPC
 	public static var curSelected:Int = 0;
 
 	var checker:FlxBackdrop = new FlxBackdrop(Paths.image("checker"), 0.2, 0.2, true, true);
