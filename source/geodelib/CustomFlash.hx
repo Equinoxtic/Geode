@@ -34,6 +34,7 @@ import geodelib.GeodeTween;
 	#### Functions
 
 	* `flash()` - Default flash.
+	* `flashSprite()` - Flashes sprite.
 **/
 class CustomFlash extends FlxSpriteGroup
 {
@@ -49,7 +50,7 @@ class CustomFlash extends FlxSpriteGroup
 		this.instance = instance;
 	}
 
-	private function flashSpriteObject(sprite:Dynamic, alpha:Float = 1, duration:Float = 1, ?startDelay:Float = 0) {
+	private function flashObject(sprite:Dynamic, alpha:Float = 1, duration:Float = 1, ?startDelay:Float = 0) {
 		new FlxTimer().start(startDelay, function(tmr:FlxTimer) {
 			if (alpha > 0) {
 				sprite.alpha = alpha;
@@ -72,7 +73,7 @@ class CustomFlash extends FlxSpriteGroup
 		
 		add(sprite);
 
-		flashSpriteObject(sprite, alpha, duration, startDelay);
+		flashObject(sprite, alpha, duration, startDelay);
 	}
 	
 	public function flashSprite(spritePath:String = '', spriteSize:Float = 1, alpha:Float = 1, duration:Float = 1, ?startDelay:Float = 0) {
@@ -91,7 +92,7 @@ class CustomFlash extends FlxSpriteGroup
 		
 		add(sprite);
 
-		flashSpriteObject(sprite, alpha, duration, startDelay);
+		flashObject(sprite, alpha, duration, startDelay);
 	}
 
 	override function update(elapsed:Float) {
