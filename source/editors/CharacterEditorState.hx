@@ -537,7 +537,7 @@ class CharacterEditorState extends MusicBeatState
 				getEvent(FlxUINumericStepper.CHANGE_EVENT, healthColorStepperB, null);
 			});
 
-		characterNameInputText = new FlxUIInputText(15, imageInputText.y + 35, 75, '', 8);
+		characterNameInputText = new FlxUIInputText(15, imageInputText.y + 35, 75, "Player", 8);
 
 		healthIconInputText = new FlxUIInputText(15, characterNameInputText.y + 35, 75, leHealthIcon.getCharacter(), 8);
 
