@@ -95,6 +95,10 @@ class CustomFlash extends FlxSpriteGroup
 		flashObject(sprite, alpha, duration, startDelay);
 	}
 
+	public function flashExistingObject(object:Dynamic, alpha:Float = 1, duration:Float = 1, ?startDelay:Float = 0) {
+		flashObject(object, alpha, duration, startDelay);
+	}
+
 	override function update(elapsed:Float) {
 		super.update(elapsed);
 		GeodeTween.globalManager.update(elapsed);
