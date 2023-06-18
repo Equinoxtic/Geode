@@ -19,6 +19,8 @@ import lime.utils.Assets;
 import flixel.system.FlxSound;
 import openfl.utils.Assets as OpenFlAssets;
 import WeekData;
+import geodelib.ui.ScreenFooter;
+import geodelib.camera.CameraTools;
 #if MODS_ALLOWED
 import sys.FileSystem;
 #end
@@ -198,24 +200,16 @@ class FreeplayState extends MusicBeatState
 			// scoreText.textField.htmlText = md;
 
 			trace(md);
-		 */
+		*/
 
-		var textBG:FlxSprite = new FlxSprite(0, FlxG.height - 26).makeGraphic(FlxG.width, 26, 0xFF000000);
-		textBG.alpha = 0.6;
-		add(textBG);
-
-		#if PRELOAD_ALL
 		var leText:String = "Press SPACE to listen to the Song / Press CTRL to open the Gameplay Changers Menu / Press RESET to Reset your Score and Accuracy.";
-		var size:Int = 16;
-		#else
-		var leText:String = "Press CTRL to open the Gameplay Changers Menu / Press RESET to Reset your Score and Accuracy.";
-		var size:Int = 18;
-		#end
-		var text:FlxText = new FlxText(textBG.x, textBG.y + 4, FlxG.width, leText, size);
-		text.setFormat(Paths.font("vcr.ttf"), size, FlxColor.WHITE, RIGHT);
-		text.scrollFactor.set();
-		add(text);
+		var screenFooter:ScreenFooter = new ScreenFooter(leText, 16, 0xFF252525, 0xFFFFFFFF);
+		screenFooter.enabled = true;
+		add(screenFooter);
+
 		super.create();
+
+		CameraTools.zoomCameraFadeIn(FlxG.camera, 3, 1);
 	}
 
 	override function closeSubState() {
