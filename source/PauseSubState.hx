@@ -16,7 +16,6 @@ import flixel.util.FlxTimer;
 import flixel.util.FlxColor;
 import flixel.FlxCamera;
 import flixel.util.FlxStringUtil;
-import geodelib.GeodeTween;
 
 class PauseSubState extends MusicBeatSubstate
 {
@@ -139,10 +138,10 @@ class PauseSubState extends MusicBeatSubstate
 		levelDifficulty.x = FlxG.width - (levelDifficulty.width + 20);
 		blueballedTxt.x = FlxG.width - (blueballedTxt.width + 20);
 
-		GeodeTween.tween(bg, {alpha: 0.75}, 0.4, {ease: FlxEase.quartInOut});
-		GeodeTween.tween(levelInfo, {alpha: 1, y: 20}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.3});
-		GeodeTween.tween(levelDifficulty, {alpha: 1, y: levelDifficulty.y + 5}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.5});
-		GeodeTween.tween(blueballedTxt, {alpha: 1, y: blueballedTxt.y + 5}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.7});
+		FlxTween.tween(bg, {alpha: 0.75}, 0.4, {ease: FlxEase.quartInOut});
+		FlxTween.tween(levelInfo, {alpha: 1, y: 20}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.3});
+		FlxTween.tween(levelDifficulty, {alpha: 1, y: levelDifficulty.y + 5}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.5});
+		FlxTween.tween(blueballedTxt, {alpha: 1, y: blueballedTxt.y + 5}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.7});
 
 		grpMenuShit = new FlxTypedGroup<Alphabet>();
 		add(grpMenuShit);
@@ -159,7 +158,7 @@ class PauseSubState extends MusicBeatSubstate
 
 		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
 
-		GeodeTween.tween(pauseMenuCam, {alpha: 1}, 0.35, {ease: FlxEase.quartInOut});
+		FlxTween.tween(pauseMenuCam, {alpha: 1}, 0.35, {ease: FlxEase.quartInOut});
 	}
 
 	var holdTime:Float = 0;
@@ -171,8 +170,6 @@ class PauseSubState extends MusicBeatSubstate
 			pauseMusic.volume += 0.01 * elapsed;
 
 		super.update(elapsed);
-
-		GeodeTween.globalManager.update(elapsed);
 
 		updateSkipTextStuff();
 
@@ -337,7 +334,7 @@ class PauseSubState extends MusicBeatSubstate
 	}
 
 	function closePauseMenu() {
-		GeodeTween.tween(pauseMenuCam, {alpha: 0}, 0.525, {ease: FlxEase.quartInOut});
+		FlxTween.tween(pauseMenuCam, {alpha: 0}, 0.525, {ease: FlxEase.quartInOut});
 
 		new FlxTimer().start(0.55, function(tmr:FlxTimer) {
 			close();

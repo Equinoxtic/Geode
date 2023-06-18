@@ -56,6 +56,18 @@ class VisualsUISubState extends BaseOptionsMenu
 			['Time Left', 'Time Elapsed', 'Song Name', 'Disabled']);
 		addOption(option);
 
+		var option:Option = new Option('Time Bar Frames:',
+			"The bigger value you set then visual will change smoother. (Default value is 800.)",
+			'timeBarNumDivisions',
+			'int',
+			800);
+		option.displayFormat = "%vfps";
+		option.scrollSpeed = 50;
+		option.minValue = 100;
+		option.maxValue = 2000;
+		option.changeValue = 1;
+		addOption(option);
+
 		var option:Option = new Option('Flashing Lights',
 			"Uncheck this if you're sensitive to flashing lights!",
 			'flashing',

@@ -218,37 +218,30 @@ class TitleState extends MusicBeatState
 		#elseif CHARTING
 		MusicBeatState.switchState(new ChartingState());
 		#else
-		if(FlxG.save.data.flashing == null && !FlashingState.leftState) {
-			FlxTransitionableState.skipNextTransIn = true;
-			FlxTransitionableState.skipNextTransOut = true;
-			MusicBeatState.switchState(new FlashingState());
-		} else {
-			#if desktop
-			if (!DiscordClient.isInitialized)
+		#if desktop
+		if (!DiscordClient.isInitialized)
+		{
+			DiscordClient.initialize();
+			Application.current.onExit.add (function (exitCode) {
+				DiscordClient.shutdown();
+			});
+		}
+		#end
+		if (initialized)
+			startIntro();
+		else
+		{
+			new FlxTimer().start(1, function(tmr:FlxTimer)
 			{
-				DiscordClient.initialize();
-				Application.current.onExit.add (function (exitCode) {
-					DiscordClient.shutdown();
-				});
-			}
-			#end
-
-			if (initialized)
 				startIntro();
-			else
-			{
-				new FlxTimer().start(1, function(tmr:FlxTimer)
-				{
-					startIntro();
-				});
-			}
+			});
 		}
 		#end
 
 		cameraFlash = new FlxCamera();
 		cameraFlash.bgColor.alpha = 0;
 		FlxG.cameras.add(cameraFlash, false);
-		_flash = new CustomFlash();
+		_flash = new CustomFlash(this);
 		_flash.cameras = [cameraFlash];
 		add(_flash);
 	}

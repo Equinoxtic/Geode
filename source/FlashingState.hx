@@ -9,58 +9,58 @@ import flixel.effects.FlxFlicker;
 import lime.app.Application;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
 import flixel.util.FlxTimer;
+import flixel.input.keyboard.FlxKey;
+import geodelib.camera.CameraTools;
 
 class FlashingState extends MusicBeatState
 {
 	public static var leftState:Bool = false;
-
 	var warnText:FlxText;
+
 	override function create()
 	{
-		super.create();
-
 		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		add(bg);
 
 		warnText = new FlxText(0, 0, FlxG.width,
-			"Hey, watch out!\n
-			This Mod contains some flashing lights!\n
-			Press ENTER to disable them now or go to Options Menu.\n
-			Press ESCAPE to ignore this message.\n
-			You've been warned!",
-			32);
-		warnText.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, CENTER);
-		warnText.screenCenter(Y);
+			"Hey there, watch out!\n
+			This Game contains some flashing lights!\n
+			You can disable flashing lights in the Options / Settings Menu.\n
+			You've been warned by the developers!\n
+			Press the *ENTER* key to continue.",
+			24);
+		warnText.setFormat("VCR OSD Mono", 24, FlxColor.WHITE, CENTER);
+		warnText.screenCenter();
+		warnText.alpha = 0;
 		add(warnText);
+
+		super.create();
+
+		CameraTools.zoomCameraFadeIn(FlxG.camera, 3, 1, 0.875);
+		FlxTween.tween(warnText, {alpha: 0.95}, 1.35, {ease: FlxEase.expoInOut});
 	}
 
+	private function openTitleState()
+	{
+		FlxG.sound.play(Paths.sound('confirmMenu'));
+		warnText.font = Paths.font('teoran-font-v1-04.ttf');
+		CameraTools.zoomCameraFadeOut(FlxG.camera, 3, 0.875, 'quartInOut');
+		warnText.alpha = 1;
+		FlxTween.tween(warnText, {alpha: 0}, {ease: FlxEase.expoInOut, onComplete: function(twn:FlxTween) {
+			new FlxTimer().start(1, function(tmr:FlxTimer) {
+				MusicBeatState.switchState(new TitleState());
+			});
+		}});
+	}
+
+	var pressedSmth:Bool = false;
 	override function update(elapsed:Float)
 	{
-		if(!leftState) {
-			var back:Bool = controls.BACK;
-			if (controls.ACCEPT || back) {
-				leftState = true;
-				FlxTransitionableState.skipNextTransIn = true;
-				FlxTransitionableState.skipNextTransOut = true;
-				if(!back) {
-					ClientPrefs.flashing = false;
-					ClientPrefs.saveSettings();
-					FlxG.sound.play(Paths.sound('confirmMenu'));
-					FlxFlicker.flicker(warnText, 1, 0.1, false, true, function(flk:FlxFlicker) {
-						new FlxTimer().start(0.5, function (tmr:FlxTimer) {
-							MusicBeatState.switchState(new TitleState());
-						});
-					});
-				} else {
-					FlxG.sound.play(Paths.sound('cancelMenu'));
-					FlxTween.tween(warnText, {alpha: 0}, 1, {
-						onComplete: function (twn:FlxTween) {
-							MusicBeatState.switchState(new TitleState());
-						}
-					});
-				}
-			}
+		if (FlxG.keys.anyJustPressed([FlxKey.ENTER, FlxKey.SPACE]) && !pressedSmth) {
+			pressedSmth = true;
+			openTitleState();
 		}
 		super.update(elapsed);
 	}

@@ -114,10 +114,10 @@ class BaseOptionsMenu extends MusicBeatSubstate
 			}
 			//optionText.snapToPosition(); //Don't ignore me when i ask for not making a fucking pull request to uncomment this line ok
 
-			if(optionsArray[i].showBoyfriend && boyfriend == null)
-			{
-				reloadBoyfriend();
-			}
+			// if(optionsArray[i].showBoyfriend && boyfriend == null)
+			// {
+			// 	reloadBoyfriend();
+			// }
 			updateTextFrom(optionsArray[i]);
 		}
 
@@ -259,9 +259,9 @@ class BaseOptionsMenu extends MusicBeatSubstate
 			}
 		}
 
-		if(boyfriend != null && boyfriend.animation.curAnim.finished) {
-			boyfriend.dance();
-		}
+		// if(boyfriend != null && boyfriend.animation.curAnim.finished) {
+		// 	boyfriend.dance();
+		// }
 
 		if(nextAccept > 0) {
 			nextAccept -= 1;
@@ -327,23 +327,23 @@ class BaseOptionsMenu extends MusicBeatSubstate
 		FlxG.sound.play(Paths.sound('scrollMenu'));
 	}
 
-	public function reloadBoyfriend()
-	{
-		var wasVisible:Bool = false;
-		if(boyfriend != null) {
-			wasVisible = boyfriend.visible;
-			boyfriend.kill();
-			remove(boyfriend);
-			boyfriend.destroy();
-		}
+	// public function reloadBoyfriend()
+	// {
+	// 	var wasVisible:Bool = false;
+	// 	if(boyfriend != null) {
+	// 		wasVisible = boyfriend.visible;
+	// 		boyfriend.kill();
+	// 		remove(boyfriend);
+	// 		boyfriend.destroy();
+	// 	}
 
-		boyfriend = new Character(840, 170, 'bf', true);
-		boyfriend.setGraphicSize(Std.int(boyfriend.width * 0.75));
-		boyfriend.updateHitbox();
-		boyfriend.dance();
-		insert(1, boyfriend);
-		boyfriend.visible = wasVisible;
-	}
+	// 	boyfriend = new Character(840, 170, 'bf-christmas', true);
+	// 	boyfriend.setGraphicSize(Std.int(boyfriend.width * 0.75));
+	// 	boyfriend.updateHitbox();
+	// 	boyfriend.dance();
+	// 	insert(1, boyfriend);
+	// 	boyfriend.visible = wasVisible;
+	// }
 
 	function reloadCheckboxes() {
 		for (checkbox in checkboxGroup) {
