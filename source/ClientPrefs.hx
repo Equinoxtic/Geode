@@ -55,10 +55,11 @@ class ClientPrefs {
 	];
 
 	// Custom preferences
-	// Gameplay
 	public static var useP_Vignette:Bool = true;
 	public static var levelDim:Float = 0.15;
 	public static var alphaOverride:Float = 0.50;
+	public static var timeBarNumDivisions:Int = 800;
+	public static var showJudgementCounter:Bool = true;
 
 	public static var comboOffset:Array<Int> = [0, 0, 0, 0];
 	public static var ratingOffset:Int = 0;
@@ -138,10 +139,11 @@ class ClientPrefs {
 		FlxG.save.data.comboStacking = comboStacking;
 
 		// Custom preferences
-		// Gameplay
 		FlxG.save.data.useP_Vignette = useP_Vignette;
 		FlxG.save.data.levelDim = levelDim;
 		FlxG.save.data.alphaOverride = alphaOverride;
+		FlxG.save.data.timeBarNumDivisions = timeBarNumDivisions;
+		FlxG.save.data.showJudgementCounter = showJudgementCounter;
 	
 		FlxG.save.flush();
 
@@ -264,7 +266,6 @@ class ClientPrefs {
 		}
 
 		// Custom preferences
-		// Gameplay
 		if (FlxG.save.data.useP_Vignette != null) {
 			useP_Vignette = FlxG.save.data.useP_Vignette;
 		}
@@ -275,6 +276,14 @@ class ClientPrefs {
 
 		if (FlxG.save.data.alphaOverride != null) {
 			alphaOverride = FlxG.save.data.alphaOverride;
+		}
+
+		if (FlxG.save.data.timeBarNumDivisions != null) {
+			timeBarNumDivisions = FlxG.save.data.timeBarNumDivisions;
+		}
+
+		if (FlxG.save.data.showJudgementCounter != null) {
+			showJudgementCounter = FlxG.save.data.showJudgementCounter;
 		}
 		
 		// flixel automatically saves your volume!

@@ -57,6 +57,7 @@ import flixel.animation.FlxAnimationController;
 import animateatlas.AtlasFrameMaker;
 import geodelib.GeodeTween;
 import geodelib.CustomFlash;
+import geodelib.ui.JudgementCounter;
 import Achievements;
 import StageData;
 import FunkinLua;
@@ -341,6 +342,8 @@ class PlayState extends MusicBeatState
 	var opponentName:String;
 	var playerText:FlxText;
 	var opponentText:FlxText;
+
+	var judgementCounter:JudgementCounter;
 
 	override public function create()
 	{
@@ -1061,6 +1064,7 @@ class PlayState extends MusicBeatState
 		timeTxt.scrollFactor.set();
 		timeTxt.alpha = 0;
 		timeTxt.borderSize = 1.2;
+		timeTxt.antialiasing = ClientPrefs.globalAntialiasing;
 		timeTxt.visible = showTime;
 
 		if(ClientPrefs.timeBarType == 'Song Name')
@@ -1085,7 +1089,7 @@ class PlayState extends MusicBeatState
 		timeBar.scrollFactor.set();
 		timeBar.screenCenter(X);
 		timeBar.createFilledBar(0x00000000, 0xFFFFFFFF);
-		timeBar.numDivisions = 800; //How much lag this causes?? Should i tone it down to idk, 400 or 200?
+		timeBar.numDivisions = ClientPrefs.timeBarNumDivisions; //How much lag this causes?? Should i tone it down to idk, 400 or 200?
 		timeBar.alpha = 0;
 		timeBar.visible = showTime;
 		add(timeBar);
@@ -1191,24 +1195,27 @@ class PlayState extends MusicBeatState
 		playerText.setFormat(Paths.font('HOOG0555.TTF'), 22, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		playerText.scrollFactor.set();
 		playerText.screenCenter(X);
+		playerText.antialiasing = ClientPrefs.globalAntialiasing;
 		playerText.visible = !ClientPrefs.hideHud;
-		playerText.borderSize = 1.375;
+		playerText.borderSize = 1.5;
 		
 		opponentText = new FlxText(0, healthBarBG.y - 25, 400, "", 23);
 		opponentText.setFormat(Paths.font('HOOG0555.TTF'), 22, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		opponentText.scrollFactor.set();
 		opponentText.screenCenter(X);
+		opponentText.antialiasing = ClientPrefs.globalAntialiasing;
 		opponentText.visible = !ClientPrefs.hideHud;
-		opponentText.borderSize = 1.375;
+		opponentText.borderSize = 1.5;
 		add(playerText);
 		add(opponentText);
 
-		var defaultOutlineColor:FlxColor = FlxColor.fromRGB(150, 150, 150);
+		var defaultOutlineColor:FlxColor = FlxColor.fromRGB(0, 0, 0);
 
 		scoreTxt = new FlxText(0, healthBarBG.y + 64, FlxG.width, "", 20);
 		scoreTxt.setFormat(Paths.font("Exo2-Medium.ttf"), 22, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, defaultOutlineColor);
 		scoreTxt.scrollFactor.set();
-		scoreTxt.borderSize = 0.85;
+		scoreTxt.borderSize = 1.675;
+		scoreTxt.antialiasing = ClientPrefs.globalAntialiasing;
 		scoreTxt.visible = !ClientPrefs.hideHud;
 		var scoreTxtBackground:FlxSprite = new FlxSprite().makeGraphic(1, 1, FlxColor.BLACK);
 		scoreTxtBackground.alpha = ClientPrefs.alphaOverride;
@@ -1221,9 +1228,10 @@ class PlayState extends MusicBeatState
 
 		comboTxt = new FlxText(9 * 4, healthBarBG.y + 67, FlxG.width, "", 35);
 		comboTxt.setFormat(Paths.font("HOOG0555.TTF"), 35, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, defaultOutlineColor);
-		comboTxt.borderSize = 1.275;
+		comboTxt.borderSize = 2.5;
 		comboTxt.scrollFactor.set();
 		comboTxt.visible = !ClientPrefs.hideHud;
+		comboTxt.antialiasing = ClientPrefs.globalAntialiasing;
 		comboTxt.alpha = 0;
 		add(comboTxt);
 
@@ -1232,10 +1240,17 @@ class PlayState extends MusicBeatState
 		botplayTxt.scrollFactor.set();
 		botplayTxt.borderSize = 1.25;
 		botplayTxt.visible = cpuControlled;
+		botplayTxt.antialiasing = ClientPrefs.globalAntialiasing;
 		add(botplayTxt);
 		if(ClientPrefs.downScroll) {
 			botplayTxt.y = FlxG.height - 78;
 		}
+
+		judgementCounter = new JudgementCounter(-30, 10, this, 25);
+		judgementCounter.visible = ClientPrefs.showJudgementCounter;
+		judgementCounter.scrollFactor.set();
+		judgementCounter.screenCenter(Y);
+		add(judgementCounter);
 
 		p_vignette = new FlxSprite().loadGraphic(Paths.image("vignetteDesat"));
 		p_vignette.scrollFactor.set();
@@ -1261,6 +1276,7 @@ class PlayState extends MusicBeatState
 		doof.cameras = [camHUD];
 		playerText.cameras = [camHUD];
 		opponentText.cameras = [camHUD];
+		judgementCounter.cameras = [camHUD];
 		
 		botplayTxt.cameras = [camExtra];
 		comboTxt.cameras = [camExtra];
@@ -2353,7 +2369,7 @@ class PlayState extends MusicBeatState
 				countdownGo.alpha = 0;
 				insert(members.indexOf(notes), countdownGo);
 
-				var __flash:CustomFlash = new CustomFlash();
+				var __flash:CustomFlash = new CustomFlash(this);
 				__flash.cameras = [camHUD];
 				add(__flash);
 
@@ -2361,10 +2377,14 @@ class PlayState extends MusicBeatState
 				{
 					case 0:
 						FlxG.sound.play(Paths.sound('intro3' + introSoundsSuffix), 0.6);
-						__flash.flash(0.1, 1.75, FlxColor.WHITE);
+						if (ClientPrefs.flashing) {
+							__flash.flash(0.1, 2.15, FlxColor.WHITE);
+						}
 					case 1:
 						countdownReady.alpha = 1;
-						__flash.flash(0.1, 1.75, FlxColor.WHITE);
+						if (ClientPrefs.flashing) {
+							__flash.flash(0.1, 2.15, FlxColor.WHITE);
+						}
 						GeodeTween.tween(countdownReady, {/*y: countdownReady.y + 100,*/ alpha: 0}, 1.755, {
 							ease: FlxEase.cubeInOut,
 							onComplete: function(twn:FlxTween)
@@ -2376,7 +2396,9 @@ class PlayState extends MusicBeatState
 						FlxG.sound.play(Paths.sound('intro2' + introSoundsSuffix), 0.6);
 					case 2:
 						countdownSet.alpha = 1;
-						__flash.flash(0.1, 1.75, FlxColor.WHITE);
+						if (ClientPrefs.flashing) {
+							__flash.flash(0.1, 2.15, FlxColor.WHITE);
+						}
 						GeodeTween.tween(countdownSet, {/*y: countdownSet.y + 100,*/ alpha: 0}, 1.755, {
 							ease: FlxEase.cubeInOut,
 							onComplete: function(twn:FlxTween)
@@ -2388,7 +2410,9 @@ class PlayState extends MusicBeatState
 						FlxG.sound.play(Paths.sound('intro1' + introSoundsSuffix), 0.6);
 					case 3:
 						countdownGo.alpha = 1;
-						__flash.flash(0.1, 1.75, FlxColor.WHITE);
+						if (ClientPrefs.flashing) {
+							__flash.flash(0.1, 2.15, FlxColor.WHITE);
+						}
 						GeodeTween.tween(countdownGo, {/*y: countdownGo.y + 100,*/ alpha: 0}, 1.755, {
 							ease: FlxEase.cubeInOut,
 							onComplete: function(twn:FlxTween)
@@ -2475,19 +2499,20 @@ class PlayState extends MusicBeatState
 		+ (ratingName != '?' ? ' (${Highscore.floorDecimal(ratingPercent * 100, 2)}%)' : '')
 		+ (ratingName != '?' ? ' | $rankingShit ($ratingFC)' : '');
 
-		/* if(ClientPrefs.scoreZoom && !miss && !cpuControlled)
+		if(ClientPrefs.scoreZoom && !miss && !cpuControlled)
 		{
 			if(scoreTxtTween != null) {
 				scoreTxtTween.cancel();
 			}
-			scoreTxt.scale.x = 1.15;
-			scoreTxt.scale.y = 1.15;
-			scoreTxtTween = GeodeTween.tween(scoreTxt.scale, {x: 1, y: 1}, 0.75, {
+			scoreTxt.scale.x = 1.025;
+			scoreTxt.scale.y = 1.025;
+			scoreTxtTween = GeodeTween.tween(scoreTxt.scale, {x: 1, y: 1}, 2.75, {
 				onComplete: function(twn:FlxTween) {
 					scoreTxtTween = null;
 				}
 			});
-		} */
+			scoreTxtTween.start();
+		}
 
 		callOnLuas('onUpdateScore', [miss]);
 	}
@@ -3252,6 +3277,8 @@ class PlayState extends MusicBeatState
 
 		super.update(elapsed);
 
+		judgementCounter.updateJudgementCounter(sicks, goods, bads, shits);
+
 		GeodeTween.globalManager.update(elapsed);
 
 		if (boyfriend.characterName != null) {
@@ -3280,8 +3307,8 @@ class PlayState extends MusicBeatState
 				boyfriend.healthColorArray[2] - 25
 			);
 			
-			GeodeTween.tween(p_vignette, {alpha: (healthBar.percent / 100) - 0.86}, 0.05);
-			GeodeTween.tween(p_vignetteOverlay, {alpha: (healthBar.percent / 100) - 0.885}, 0.05);
+			GeodeTween.tween(p_vignette, {alpha: (healthBar.percent / 100) - 0.825}, 0.05);
+			GeodeTween.tween(p_vignetteOverlay, {alpha: (healthBar.percent / 100) - 0.805}, 0.05);
 		}
 
 		if(botplayTxt.visible) {
@@ -4574,11 +4601,14 @@ class PlayState extends MusicBeatState
 	}
 
 	public var strumsBlocked:Array<Bool> = [];
+	public var keyAmountArray:Array<Int> = [0, 0, 0, 0];
 	private function onKeyPress(event:KeyboardEvent):Void
 	{
 		var eventKey:FlxKey = event.keyCode;
 		var key:Int = getKeyFromEvent(eventKey);
 		//trace('Pressed: ' + eventKey);
+
+		keyAmountArray[key]++;
 
 		if (!cpuControlled && startedCountdown && !paused && key > -1 && (FlxG.keys.checkStatus(eventKey, JUST_PRESSED) || ClientPrefs.controllerMode))
 		{
