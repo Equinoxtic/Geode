@@ -24,6 +24,7 @@ import editors.MasterEditorMenu;
 import flixel.input.keyboard.FlxKey;
 import geodelib.CustomFlash;
 import geodelib.GeodeTween;
+import geodelib.CheckerBackground;
 
 using StringTools;
 
@@ -32,7 +33,7 @@ class MainMenuState extends MusicBeatState
 	public static var geodeEngineVersion:String = '0.5.2'; //This is also used for Discord RPC
 	public static var curSelected:Int = 0;
 
-	var checker:FlxBackdrop = new FlxBackdrop(Paths.image("checker"), 0.2, 0.2, true, true);
+	var checker:CheckerBackground;
 
 	var menuItems:FlxTypedGroup<FlxSprite>;
 	private var camGame:FlxCamera;
@@ -88,8 +89,8 @@ class MainMenuState extends MusicBeatState
 		add(camFollow);
 		add(camFollowPos);
 
+		checker = new CheckerBackground(this, FlxG.camera, "checker");
 		checker.scrollFactor.set(0, 0.07);
-		checker.antialiasing = ClientPrefs.globalAntialiasing;
 		add(checker);
 		
 		// magenta.scrollFactor.set();
@@ -182,8 +183,7 @@ class MainMenuState extends MusicBeatState
 			spr.updateHitbox();
 		});
 
-		checker.x -= 0.45 / (ClientPrefs.framerate / 60);
-		checker.y -= 0.16 / (ClientPrefs.framerate / 60);
+		checker.updateCheckerPosition(0.45, 0.16, true, true);
 
 		var lerpVal:Float = CoolUtil.boundTo(elapsed * 7.5, 0, 1);
 		camFollowPos.setPosition(FlxMath.lerp(camFollowPos.x, camFollow.x, lerpVal), FlxMath.lerp(camFollowPos.y, camFollow.y, lerpVal));
