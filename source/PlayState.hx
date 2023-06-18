@@ -5327,8 +5327,6 @@ class PlayState extends MusicBeatState
 
 		health -= 0.00375;
 
-		FlxG.camera.shake(0.0375, 0.0015);
-
 		if(lastBeatHit >= curBeat) {
 			//trace('BEAT HIT: ' + curBeat + ', LAST HIT: ' + lastBeatHit);
 			return;
