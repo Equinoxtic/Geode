@@ -123,6 +123,13 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 			true);
 		addOption(option);
 
+		var option:Option = new Option("Show Judgement Counter",
+			"Displays the amount of judgements you have in-game.",
+			'showJudgementCounter',
+			'bool',
+			true);
+		addOption(option);
+
 		var option:Option = new Option('Rating Offset',
 			'Changes how late/early you have to hit for a "Sick!"\nHigher values mean you have to hit later.',
 			'ratingOffset',
