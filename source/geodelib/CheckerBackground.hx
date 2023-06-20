@@ -15,7 +15,7 @@ class CheckerBackground extends FlxSpriteGroup {
 
 	private var backdrop:FlxBackdrop;
 
-	public function new(?instance:FlxBasic, ?cam:FlxCamera, ?checkerImage:String = "checker", ?scrollX:Float = 0.2, ?scrollY:Float = 0.2, ?repeatX:Bool = true, ?repeatY:Bool = true) {
+	public function new(?instance:FlxBasic, ?checkerImage:String = "checker", ?scrollX:Float = 0.2, ?scrollY:Float = 0.2, ?repeatX:Bool = true, ?repeatY:Bool = true, ?sizeMult:Float = 0.0) {
 		super();
 		if (instance == null) {
 			instance = this;
@@ -30,8 +30,8 @@ class CheckerBackground extends FlxSpriteGroup {
 		}
 
 		backdrop = new FlxBackdrop(Paths.image(nCheckerImg), scrollX, scrollY, repeatX, repeatY);
+		backdrop.setGraphicSize(Std.int(backdrop.width * sizeMult), Std.int(backdrop.height * sizeMult));
 		backdrop.antialiasing = ClientPrefs.globalAntialiasing;
-		backdrop.cameras = [cam];
 		add(backdrop);
 	}
 
