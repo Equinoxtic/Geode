@@ -20,22 +20,22 @@ import geodelib.GeodeTween;
 
 	#### Usage (SAMPLE CODE)
 
-	~~~~~~~~~~~~~~~{.hx}
+	```haxe
 	// Set up
 	class CameraFlashSample {
-		var _flash:CameraFlash = new CameraFlash();
+		var _flash:CameraFlash = new CameraFlash(this);
 		_flash.cameras = [camera];
 		add(_flash);
 
 		_flash.flash(...); // Flash function
 	}
-	~~~~~~~~~~~~~~~
+	```
 
 	#### Functions
 
 	* `flash()` - Default flash.
-	* `flashSprite()` - Flashes sprite.
-**/
+	* `flashSprite()` - Flashes a sprite with it's alpha value.
+*/
 class CustomFlash extends FlxSpriteGroup
 {
 	private var twn:FlxTween;
@@ -62,6 +62,18 @@ class CustomFlash extends FlxSpriteGroup
 		});
 	}
 
+	/**
+		Flashes the screen.
+
+		```haxe
+		_flash.flash(1, 0.5, FlxColor.WHITE);
+		```
+
+		@param	alpha		The initial alpha of the flash.
+		@param	duration	How long the flash stays for.
+		@param	color		The color of the flash.
+		@param 	startDelay	Delays the start of the flash.
+	**/
 	public function flash(alpha:Float = 1, duration:Float = 0, color:FlxColor = FlxColor.WHITE, ?startDelay:Float = 0):Void {
 		var sprite:FlxSprite = new FlxSprite().makeGraphic(
 			Std.int(FlxG.width * 2), Std.int(FlxG.height * 2),
@@ -76,7 +88,20 @@ class CustomFlash extends FlxSpriteGroup
 		flashObject(sprite, alpha, duration, startDelay);
 	}
 	
-	public function flashSprite(spritePath:String = '', spriteSize:Float = 1, alpha:Float = 1, duration:Float = 1, ?startDelay:Float = 0) {
+	/**
+		Flashes a sprite. (Does not flash existing sprites, use ``flashExistingObject`` for flashing existing sprites.)
+
+		```haxe
+		_flash.flashSprite("sprite", 1, 0.75, 1);
+		```
+
+		@param		spritePath		The path of the sprite to be loaded.
+		@param		alpha			The initial alpha of the sprite.
+		@param		duration		How long the flash will last.
+		@param		spriteSize		The size of the sprite.
+		@param		startDelay		Delays the start of the flash.
+	**/
+	public function flashSprite(spritePath:String = '', alpha:Float = 1, duration:Float = 1, spriteSize:Float = 1, ?startDelay:Float = 0) {
 		var spritePath_s:String = '';
 		if (spritePath != null) {
 			spritePath_s = spritePath;
@@ -95,8 +120,25 @@ class CustomFlash extends FlxSpriteGroup
 		flashObject(sprite, alpha, duration, startDelay);
 	}
 
+	/**
+		Flashes an existing sprite / object.
+
+		```haxe
+		_flash.flashExistingObject(sprite, 1, 0.75);
+		```
+
+		@param		object			The object to flash.
+		@param		alpha			The initial alpha of the sprite.
+		@param		duration		How long the flash will last.
+		@param		startDelay		Delays the start of the flash.
+	**/
 	public function flashExistingObject(object:Dynamic, alpha:Float = 1, duration:Float = 1, ?startDelay:Float = 0) {
-		flashObject(object, alpha, duration, startDelay);
+		if (object != null) {
+			object.alpha = 0;
+			flashObject(object, alpha, duration, startDelay);
+		} else {
+			trace('${object} cannot be found or null.');
+		}
 	}
 
 	override function update(elapsed:Float) {
