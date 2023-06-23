@@ -89,7 +89,7 @@ class MainMenuState extends MusicBeatState
 		add(camFollow);
 		add(camFollowPos);
 
-		checker = new CheckerBackground(this, FlxG.camera, "checker");
+		checker = new CheckerBackground(this, "checker");
 		checker.scrollFactor.set(0, 0.07);
 		add(checker);
 		
