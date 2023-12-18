@@ -14,7 +14,7 @@ using StringTools;
 
 class ScreenFooter extends FlxSpriteGroup
 {
-	public var enabled = false;
+	public var enabled = true;
 	var instance:FlxBasic;
 	private var textBgSprite:FlxSprite;
 	private var textSprite:FlxText;
