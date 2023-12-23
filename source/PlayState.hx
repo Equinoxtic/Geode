@@ -184,6 +184,7 @@ class PlayState extends MusicBeatState
 
 	public var gfSpeed:Int = 1;
 	public var health:Float = 1;
+    // public var enemyHealth:Float = 1;
 	public var combo:Int = 0;
 
 	private var healthBarBG:AttachedSprite;
@@ -335,8 +336,10 @@ class PlayState extends MusicBeatState
 	// stores the last combo score objects in an array
 	public static var lastScore:Array<FlxSprite> = [];
 
-	var p_vignette:FlxSprite;
-	var p_vignetteOverlay:FlxSprite;
+	var playerVignette:FlxSprite;
+	var playerVignetteOverlay:FlxSprite;
+    var enemyVignette:FlxSprite;
+    var enemyVignetteOverlay:FlxSprite;
 
 	var playerName:String;
 	var opponentName:String;
@@ -1252,18 +1255,31 @@ class PlayState extends MusicBeatState
 		judgementCounter.screenCenter(Y);
 		add(judgementCounter);
 
-		p_vignette = new FlxSprite().loadGraphic(Paths.image("vignetteDesat"));
-		p_vignette.scrollFactor.set();
-		p_vignette.screenCenter();
-		p_vignette.antialiasing = ClientPrefs.globalAntialiasing;
-		p_vignette.alpha = 0;
-		p_vignetteOverlay = new FlxSprite().makeGraphic(1280, 720);
-		p_vignetteOverlay.alpha = 0;
-		p_vignetteOverlay.scrollFactor.set();
-		p_vignetteOverlay.screenCenter();
+		playerVignette = new FlxSprite().loadGraphic(Paths.image("vignetteDesat"));
+		playerVignette.scrollFactor.set();
+		playerVignette.screenCenter();
+		playerVignette.antialiasing = ClientPrefs.globalAntialiasing;
+		playerVignette.alpha = 0;
+		playerVignetteOverlay = new FlxSprite().makeGraphic(1280, 720);
+		playerVignetteOverlay.alpha = 0;
+		playerVignetteOverlay.scrollFactor.set();
+		playerVignetteOverlay.screenCenter();
 
-		add(p_vignetteOverlay);
-		add(p_vignette);
+		add(playerVignette);
+		add(playerVignetteOverlay);
+        
+        // enemyVignette = new FlxSprite().loadGraphic(Paths.image("vignetteDesat"));
+        // scrollFactor.set();
+        // enemyVignette.screenCenter();
+        // enemyVignette.antialiasing = ClientPrefs.globalAntialiasing;
+        // enemyVignette.alpha = 0;
+        // enemyVignetteOverlay = new FlxSprite().makeGraphic(1280, 720);
+        // enemyVignetteOverlay.alpha = 0;
+        // enemyVignetteOverlay.scrollFactor.set();
+        // enemyVignetteOverlay.screenCenter();
+        
+        // add(enemyVignette);
+        // add(enemyVignetteOverlay);
 
 		strumLineNotes.cameras = [camHUD];
 		grpNoteSplashes.cameras = [camHUD];
@@ -1285,8 +1301,10 @@ class PlayState extends MusicBeatState
 		scoreTxtBackground.cameras = [camExtra];
 		scoreTxt.cameras = [camExtra];
 		timeTxt.cameras = [camExtra];
-		p_vignetteOverlay.cameras = [camExtra];
-		p_vignette.cameras = [camExtra];
+		playerVignette.cameras = [camExtra];
+		playerVignetteOverlay.cameras = [camExtra];
+        // enemyVignette.cameras = [camExtra];
+        // enemyVignetteOverlay.cameras = [camExtra];
 
 		// if (SONG.song == 'South')
 		// FlxG.camera.alpha = 0.7;
@@ -1488,7 +1506,7 @@ class PlayState extends MusicBeatState
 
 		trace("Credit: " + set_songCredit());
 
-		check_preferences();
+		checkPreferences();
 
 		cacheCountdown();
 		cachePopUpScore();
@@ -1516,11 +1534,14 @@ class PlayState extends MusicBeatState
 		trace('\n\n[Boyfriend/Player]: $bfString\n[Dad/Opponent]: $dadString\n\n');
 	}
 
-	public function check_preferences():Void {
-		if (!ClientPrefs.useP_Vignette) {
-			p_vignette.kill();
-			p_vignetteOverlay.kill();
+	public function checkPreferences():Void {
+        
+        // CHECK HEALTH VIGNETTE SETTING
+		if (!ClientPrefs.healthVignette) {
+			playerVignette.kill();
+			playerVignetteOverlay.kill();
 		}
+        
 	}
 
 	#if (!flash && sys)
@@ -3101,6 +3122,7 @@ class PlayState extends MusicBeatState
 	var startedCountdown:Bool = false;
 	var canPause:Bool = true;
 	var limoSpeed:Float = 0;
+    // var smoothPlayerHealthTween = true;
 
 	override public function update(elapsed:Float)
 	{
@@ -3296,19 +3318,21 @@ class PlayState extends MusicBeatState
 		setOnLuas('curDecStep', curDecStep);
 		setOnLuas('curDecBeat', curDecBeat);
 
-		if (ClientPrefs.useP_Vignette) {
-			p_vignette.color = FlxColor.fromRGB(
+		if (ClientPrefs.healthVignette) {
+			playerVignette.color = FlxColor.fromRGB(
 				boyfriend.healthColorArray[0],
 				boyfriend.healthColorArray[1],
-				boyfriend.healthColorArray[2]);
-			p_vignetteOverlay.color = FlxColor.fromRGB(
+				boyfriend.healthColorArray[2]
+            );
+			playerVignetteOverlay.color = FlxColor.fromRGB(
 				boyfriend.healthColorArray[0] - 25,
 				boyfriend.healthColorArray[1] - 25,
 				boyfriend.healthColorArray[2] - 25
 			);
 			
-			GeodeTween.tween(p_vignette, {alpha: (healthBar.percent / 100) - 0.825}, 0.05);
-			GeodeTween.tween(p_vignetteOverlay, {alpha: (healthBar.percent / 100) - 0.805}, 0.05);
+            var healthPercentage:Float = ((healthBar.percent / 100) - 0.825);
+            GeodeTween.tween(playerVignette, {alpha: healthPercentage}, 0.05);
+            GeodeTween.tween(playerVignetteOverlay, {alpha: healthPercentage - 0.02}, 0.05);
 		}
 
 		if(botplayTxt.visible) {
@@ -4819,6 +4843,7 @@ class PlayState extends MusicBeatState
 		combo = 0;
 		var noteMissAmount = daNote.missHealth * healthLoss;
 		health -= noteMissAmount;
+        // enemyHealth += noteMissAmount;
 		
 		if(instakillOnMiss)
 		{
@@ -4898,6 +4923,8 @@ class PlayState extends MusicBeatState
 	function opponentNoteHit(note:Note):Void
 	{
 		health -= 0.00475;
+        // enemyHealth += 0.00475;
+        
 		if (Paths.formatToSongPath(SONG.song) != 'tutorial')
 			camZooming = true;
 
@@ -4958,6 +4985,8 @@ class PlayState extends MusicBeatState
 			{
 				FlxG.sound.play(Paths.sound('hitsound'), ClientPrefs.hitsoundVolume);
 			}
+            
+            // trace('Current health percentage: ${healthBar.percent / 100}');
 
 			if(note.hitCausesMiss) {
 				noteMiss(note);
@@ -4995,6 +5024,7 @@ class PlayState extends MusicBeatState
 
 			var noteGainAmount:Float = note.hitHealth * healthGain;
 			health += noteGainAmount;
+            // enemyHealth -= noteGainAmount;
 
 			if(!note.noAnimation) {
 				var animToPlay:String = singAnimations[Std.int(Math.abs(note.noteData))];
