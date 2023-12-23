@@ -118,7 +118,7 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 		
 		var option:Option = new Option("Health Vignette",
 			"A transparent vignette will appear, depending on the player's health.",
-			'useP_Vignette',
+			'healthVignette',
 			'bool',
 			true);
 		addOption(option);

@@ -55,7 +55,7 @@ class ClientPrefs {
 	];
 
 	// Custom preferences
-	public static var useP_Vignette:Bool = true;
+	public static var healthVignette:Bool = true;
 	public static var levelDim:Float = 0.15;
 	public static var alphaOverride:Float = 0.50;
 	public static var timeBarNumDivisions:Int = 800;
@@ -139,7 +139,7 @@ class ClientPrefs {
 		FlxG.save.data.comboStacking = comboStacking;
 
 		// Custom preferences
-		FlxG.save.data.useP_Vignette = useP_Vignette;
+		FlxG.save.data.healthVignette = healthVignette;
 		FlxG.save.data.levelDim = levelDim;
 		FlxG.save.data.alphaOverride = alphaOverride;
 		FlxG.save.data.timeBarNumDivisions = timeBarNumDivisions;
@@ -266,8 +266,8 @@ class ClientPrefs {
 		}
 
 		// Custom preferences
-		if (FlxG.save.data.useP_Vignette != null) {
-			useP_Vignette = FlxG.save.data.useP_Vignette;
+		if (FlxG.save.data.healthVignette != null) {
+			healthVignette = FlxG.save.data.healthVignette;
 		}
 		
 		if (FlxG.save.data.levelDim != null) {
